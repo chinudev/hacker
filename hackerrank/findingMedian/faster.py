@@ -35,14 +35,14 @@ class MaxHeap:
         return -1*self.heap[0]
 
 
-# Imagine the list of number is split into two groups
-# around the midpoint. 
-# Left half is stored in a MaxHeap so we can find the largest number 
-#  in the left half. 
-# Right half is stored in a MinHeap so we can find the smallest number quickly.
+# Imagine the list of number is split into two groups around the midpoint. 
+# Left half is stored in a MaxHeap,  and right half is stored in a MinHeap 
 # When number of element is even, both heap are same length. When count is odd,
 #  left half (MaxHeap) will have one more element than right half.
-#  
+#
+# Look at push() to see how we add element while keeping this property true
+# Look at getMedian() to see how to compute median given the above property
+#   
 class MedianFinder:
     def __init__(self):
         self.minHeap = MinHeap()
@@ -50,6 +50,8 @@ class MedianFinder:
         self.length = 0
 
     def push(self,value):
+
+        # Treat first element insertion as a special case
         if self.length == 0:
             self.maxHeap.push(value)
             self.length=1
@@ -62,6 +64,7 @@ class MedianFinder:
             # First check if we need to put this value in right half (MinHeap)
             #   and get a replacement 
             if value > self.minHeap.topElem():
+                # insert the value in right half and pop the min out 
                 value = self.minHeap.pushpop(value)
             self.maxHeap.push(value)
 
