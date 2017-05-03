@@ -21,7 +21,6 @@ def readAndProcess():
     while (numEntries > 0):
         numList.append(int(input().strip()))
         numList = sorted(numList)
-        print(numList)
         print(float(findMedian(numList)))
         numEntries = numEntries - 1
 
