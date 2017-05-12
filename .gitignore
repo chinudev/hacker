@@ -1,0 +1,7 @@
+.*.swp
+*.swp
+*.dSYM
+*.bin
+*.o
+a.out
+*.exe
