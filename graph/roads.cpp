@@ -30,8 +30,8 @@ int main(){
     for(int a0 = 0; a0 < q; a0++){
         int numVertex;
         int numEdges;
-        int libCost;
-        int roadCost;
+        unsigned long long libCost;
+        unsigned long long roadCost;
         cin >> numVertex >> numEdges >> libCost >> roadCost;
 
         // Adjacency list for each vertex 
@@ -87,7 +87,7 @@ int main(){
                 cout << libCost*numVertex << endl;
         } else {
                 // number of segment = currentSegment
-                int cost = libCost*currentSegment; 
+                unsigned long long cost = libCost*currentSegment; 
                 cost += roadCost*(numVertex - currentSegment);
 
                 cout << cost << endl;
@@ -98,3 +98,4 @@ int main(){
     return 0;
 }
 
+// failing 3,4,5,6,8,9,10
