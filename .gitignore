@@ -3,5 +3,7 @@
 *.dSYM
 *.bin
 *.o
+*.obj
 a.out
 *.exe
+.sconsign.dblite
