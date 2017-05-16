@@ -2,4 +2,5 @@
 Program("making_anagrams.cc", CCFLAGS=[ '/EHsc'])
 Program("queue_two_stack.cc", CCFLAGS=[ '/EHsc'])
 Program("duplication.cpp", CCFLAGS=[ '/EHsc'])
+Program("monster.cpp", CCFLAGS=[ '/EHsc'])
 
