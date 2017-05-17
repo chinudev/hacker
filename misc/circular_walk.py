@@ -31,7 +31,7 @@ def circularWalk(numNodes, start, dest, r_0, g, seed, p):
             distToDest = abs(entry - dest)
             if (distToDest > numNodes/2) : distToDest = numNodes - distToDest
             if distToDest < jumpTable[entry]: 
-                return jumpCount+1
+                return jumpCount
             
             for offset in range(-jumpTable[entry],jumpTable[entry]+1):
                 if offset == 0: next
