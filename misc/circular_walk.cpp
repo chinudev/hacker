@@ -16,11 +16,15 @@ int circularWalk(int numNodes, int start, int dest,
                 runningValue = (runningValue*g + seed) % p;
         }
 
-        vector<int> exploreList;
 
+        // exploreList keeps track of nodes to be explored 
+        vector<int> exploreList;
         exploreList.push_back(start);
+
         int jumpCount=1;
         while (!exploreList.empty()) {
+
+                // newExploreList collects nodes for next round
                 vector<int> newExploreList;
 
                 for (int entry : exploreList) {
@@ -32,34 +36,60 @@ int circularWalk(int numNodes, int start, int dest,
                         //  in exploreList
                         if (jumpSize == 0) continue;
 
-                        // shortcut in case we can reach dest 
-                        int distToDest=abs(entry-dest);
-                        if (distToDest > numNodes/2) {
-                                distToDest = numNodes-distToDest;  // wrap around
-                        }
-                        if (distToDest < jumpSize) return jumpCount;
 
-                        // go through all reachable nodes
-                        for (int offset=-jumpSize; offset <= jumpSize; offset++) {
-                                if (offset==0) continue;
+                        // check each node for dest and find the node
+                        //  that can go the farthest 
+                        
+                        // We will use this to track best candidate for next round
+                        int leftMaxJump  = jumpSize; int leftMaxJumpNode  = entry;
+                        int rightMaxJump = jumpSize; int rightMaxJumpNode = entry;
 
-                                int index = (entry+offset+numNodes) % numNodes;
-                        //cout << " looking at index " << index << endl;
-                                if (index == dest) return jumpCount;
-                                if (jumpTable[index] != 0) {
-                                        newExploreList.push_back(index);
-                                        //cout << "added " << index << endl;
+                        for (int offset=1; offset <= jumpSize; offset++) {
+
+                                int rightIndex = (entry+offset+numNodes) % numNodes;
+                                if (rightIndex == dest) return jumpCount;
+                                int rightJump = offset+jumpTable[rightIndex];
+                                if (rightJump > rightMaxJump) {
+                                        rightMaxJump=rightJump;
+                                        rightMaxJumpNode = rightIndex;
                                 }
+                                
+                                int leftIndex = (entry-offset+numNodes) % numNodes;
+                                if (leftIndex == dest) return jumpCount;
+                                int leftJump = offset+jumpTable[leftIndex];
+                                if (leftJump > leftMaxJump) {
+                                        leftMaxJump=leftJump;
+                                        leftMaxJumpNode = leftIndex;
+                                }
+
                         }
-                        // mark this node as explored
+
+                        // we won't be exploring these nodes 
+                        for (int offset=1; offset <= jumpSize; offset++) {
+                                int leftIndex = (entry-offset+numNodes) % numNodes;
+                                if (leftIndex != leftMaxJumpNode) jumpTable[leftIndex]=0;
+                                int rightIndex = (entry+offset+numNodes) % numNodes;
+                                if (rightIndex != rightMaxJumpNode) jumpTable[rightIndex]=0;
+                        }
                         jumpTable[entry]=0;
+
+
+                        // Did we find an entry to explore for next round ? 
+                        if (leftMaxJumpNode != entry) {
+                                newExploreList.push_back(leftMaxJumpNode);
+                        }
+                        if (rightMaxJumpNode != entry) {
+                                newExploreList.push_back(rightMaxJumpNode);
+                        }
+                       
                 }
 
+                // prepare for next round
                 exploreList.swap(newExploreList);
                 jumpCount++;
         }
 
-
+        // unable to reach dest
         return -1;
 
 }
