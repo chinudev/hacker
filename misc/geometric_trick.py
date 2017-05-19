@@ -79,7 +79,38 @@ def brute_force(s):
             if (k  >= len(s)): continue
 
             if (s[k] == rightChar):
-                #print(i,j,k,s[i],s[j],s[k])
+                print(i,j,k,s[i],s[j],s[k])
+                count += 1
+
+    return count
+
+def brute_force2(s):
+    s="x"+s
+    factorObj = FactorClass(5*10**5)
+    count=0
+
+    for k in range(len(s)-1,0,-1):
+        if (s[k] == 'b'): continue
+        if (s[k] == 'a'): leftChar='c'
+        else: leftChar='a'
+
+        factors = factorObj.getFactor(k)
+        delta = 1
+        for index in range(1,len(factors),2):
+            power=int((factors[index]+1)/2) 
+            delta = delta * (factors[index-1] ** power)
+
+        #print(k,delta,factors)
+
+        for j in range(k-delta,0,-delta):
+            if (s[j] != 'b'): continue 
+
+            i = int((j*j)/k)
+            if (k*i != j*j): continue   # make sure these are even multiples
+            if (i  >= j): continue      # skip if i is too big
+
+            if (s[i] == leftChar):
+                #print("  match",i,j,k,s[i],s[j],s[k])
                 count += 1
 
     return count
@@ -136,12 +167,13 @@ def geometricTrick(s):
 #n = int(input().strip())
 #s = input().strip()
 s="cbaababaacccacabcbbabacccbaaccbacccaabaabbaacbbaabcaacabcabaababacbaabacbcccbbcccbcbaaacccccbaacbaacaabcabbaabcaabcababbccbbbabbbacacbcacbbbaabbbbcbabacbbbbaacbbabcacabbbccbbcbacccbcaaabacabccabaaabbcacbcaccbcbbbcabcacacacbccacaaacaccccaaabbaccbaccaccbbbbabbccaabcbaacaaccbccbabacbbaccabcaccbcabcabcbaaaacccaccbcacacbccabababbcaaaacbccaaababacaacabbabccccaabbbababbcbaaabaaaabbbabaaaacabacaacaaaaacaacccaacccbbbbaaabbcaaabccaccacbccbcbabbbbaabbbaacbabbabcaabbabcccabcacbabacccaaccacaacbbcbabbbbcbbcaccbabacbababbaaacbccccccbcabbbababbacacbcaccccacbcaabcbacabaccabccaccbbbacabaaccbaabcbbbcbbbcbccaacabbbcaaaaabbaacbbcabbccacacbaccbbacbbbaccababbbcbcbcbabcabacacaabbbcbaacccbbbaaccccabacabbaabacbccacbccbbacbaaabaccacabaaacaacbccaaaaaccabccbbacaacbccabacaabbbbccabcccbbcbbbacbbbacabcaccabbbaaababaaabbccaacaaaccacacccaacccbccaacabaaacbaacacbcacccabacbbaacaaccccabbaaacaaabbacaccaaccbababaabbccacbcbccaaccbcaabaccbbccacbccaabcbbbaabaababcaaabccbbbcaaccacbcccacaccaccaabbcbcbbbbacaabcbbbcbbbcbccabcbabaca"
-print(brute_force(s))
-print(geometricTrick(s))
-print("expected 154")
+#print(brute_force(s))
+#print(geometricTrick(s))
+#print("expected 154")
 
 s='ccaabbbcccbbaaccccbbbccaaabbabccccabbbbbbbbbbbbbbbb'
-print(brute_force(s))
+print(len(s))
+print(brute_force2(s))
 print(geometricTrick(s))
 
 s='cbaababaacccacabcbbabacccbaaccbacccaabaabbaacbbaabcaacabcabaababacbaabacbcccbbcccbcbaaacccccbaacbaacaabcabbaabcaabcababbccbbbabbbacacbcacbbbaabbbbcbabacbbbbaacbbabcacabbbccbbcbacccbcaaabacabccabaaabbcacbcaccbcbbbcabcacacacbccacaaacaccccaaabbaccbaccaccbbbbabbccaabcbaacaaccbccbabacbbaccabcaccbcabcabcbaaaacccaccbcacacbccabababbcaaaacbccaaababacaacabbabccccaabbbababbcbaaabaaaabbbabaaaacabacaacaaaaacaacccaacccbbbbaaabbcaaabccaccacbccbcbabbbbaabbbaacbabbabcaabbabcccabcacbabacccaaccacaacbbcbabbbbcbbcaccbabacbababbaaacbccccccbcabbbababbacacbcaccccacbcaabcbacabaccabccaccbbbacabaaccbaabcbbbcbbbcbccaacabbbcaaaaabbaacbbcabbccacacbaccbbacbbbaccababbbcbcbcbabcabacacaabbbcbaacccbbbaaccccabacabbaabacbccacbccbbacbaaabaccacabaaacaacbccaaaaaccabccbbacaacbccabacaabbbbccabcccbbcbbbacbbbacabcaccabbbaaababaaabbccaacaaaccacacccaacccbccaacabaaacbaacacbcacccabacbbaacaaccccabbaaacaaabbacaccaaccbababaabbccacbcbccaaccbcaabaccbbccacbccaabcbbbaabaababcaaabccbbbcaaccacbcccacaccaccaabbcbcbbbbacaabcbbbcbbbcbccabcbabaca' \
@@ -157,7 +189,8 @@ s='cbaababaacccacabcbbabacccbaaccbacccaabaabbaacbbaabcaacabcabaababacbaabacbcccb
 'cbaababaacccacabcbbabacccbaaccbacccaabaabbaacbbaabcaacabcabaababacbaabacbcccbbcccbcbaaacccccbaacbaacaabcabbaabcaabcababbccbbbabbbacacbcacbbbaabbbbcbabacbbbbaacbbabcacabbbccbbcbacccbcaaabacabccabaaabbcacbcaccbcbbbcabcacacacbccacaaacaccccaaabbaccbaccaccbbbbabbccaabcbaacaaccbccbabacbbaccabcaccbcabcabcbaaaacccaccbcacacbccabababbcaaaacbccaaababacaacabbabccccaabbbababbcbaaabaaaabbbabaaaacabacaacaaaaacaacccaacccbbbbaaabbcaaabccaccacbccbcbabbbbaabbbaacbabbabcaabbabcccabcacbabacccaaccacaacbbcbabbbbcbbcaccbabacbababbaaacbccccccbcabbbababbacacbcaccccacbcaabcbacabaccabccaccbbbacabaaccbaabcbbbcbbbcbccaacabbbcaaaaabbaacbbcabbccacacbaccbbacbbbaccababbbcbcbcbabcabacacaabbbcbaacccbbbaaccccabacabbaabacbccacbccbbacbaaabaccacabaaacaacbccaaaaaccabccbbacaacbccabacaabbbbccabcccbbcbbbacbbbacabcaccabbbaaababaaabbccaacaaaccacacccaacccbccaacabaaacbaacacbcacccabacbbaacaaccccabbaaacaaabbacaccaaccbababaabbccacbcbccaaccbcaabaccbbccacbccaabcbbbaabaababcaaabccbbbcaaccacbcccacaccaccaabbcbcbbbbacaabcbbbcbbbcbccabcbabaca' \
 'cbaababaacccacabcbbabacccbaaccbacccaabaabbaacbbaabcaacabcabaababacbaabacbcccbbcccbcbaaacccccbaacbaacaabcabbaabcaabcababbccbbbabbbacacbcacbbbaabbbbcbabacbbbbaacbbabcacabbbccbbcbacccbcaaabacabccabaaabbcacbcaccbcbbbcabcacacacbccacaaacaccccaaabbaccbaccaccbbbbabbccaabcbaacaaccbccbabacbbaccabcaccbcabcabcbaaaacccaccbcacacbccabababbcaaaacbccaaababacaacabbabccccaabbbababbcbaaabaaaabbbabaaaacabacaacaaaaacaacccaacccbbbbaaabbcaaabccaccacbccbcbabbbbaabbbaacbabbabcaabbabcccabcacbabacccaaccacaacbbcbabbbbcbbcaccbabacbababbaaacbccccccbcabbbababbacacbcaccccacbcaabcbacabaccabccaccbbbacabaaccbaabcbbbcbbbcbccaacabbbcaaaaabbaacbbcabbccacacbaccbbacbbbaccababbbcbcbcbabcabacacaabbbcbaacccbbbaaccccabacabbaabacbccacbccbbacbaaabaccacabaaacaacbccaaaaaccabccbbacaacbccabacaabbbbccabcccbbcbbbacbbbacabcaccabbbaaababaaabbccaacaaaccacacccaacccbccaacabaaacbaacacbcacccabacbbaacaaccccabbaaacaaabbacaccaaccbababaabbccacbcbccaaccbcaabaccbbccacbccaabcbbbaabaababcaaabccbbbcaaccacbcccacaccaccaabbcbcbbbbacaabcbbbcbbbcbccabcbabaca' \
 'cbaababaacccacabcbbabacccbaaccbacccaabaabbaacbbaabcaacabcabaababacbaabacbcccbbcccbcbaaacccccbaacbaacaabcabbaabcaabcababbccbbbabbbacacbcacbbbaabbbbcbabacbbbbaacbbabcacabbbccbbcbacccbcaaabacabccabaaabbcacbcaccbcbbbcabcacacacbccacaaacaccccaaabbaccbaccaccbbbbabbccaabcbaacaaccbccbabacbbaccabcaccbcabcabcbaaaacccaccbcacacbccabababbcaaaacbccaaababacaacabbabccccaabbbababbcbaaabaaaabbbabaaaacabacaacaaaaacaacccaacccbbbbaaabbcaaabccaccacbccbcbabbbbaabbbaacbabbabcaabbabcccabcacbabacccaaccacaacbbcbabbbbcbbcaccbabacbababbaaacbccccccbcabbbababbacacbcaccccacbcaabcbacabaccabccaccbbbacabaaccbaabcbbbcbbbcbccaacabbbcaaaaabbaacbbcabbccacacbaccbbacbbbaccababbbcbcbcbabcabacacaabbbcbaacccbbbaaccccabacabbaabacbccacbccbbacbaaabaccacabaaacaacbccaaaaaccabccbbacaacbccabacaabbbbccabcccbbcbbbacbbbacabcaccabbbaaababaaabbccaacaaaccacacccaacccbccaacabaaacbaacacbcacccabacbbaacaaccccabbaaacaaabbacaccaaccbababaabbccacbcbccaaccbcaabaccbbccacbccaabcbbbaabaababcaaabccbbbcaaccacbcccacaccaccaabbcbcbbbbacaabcbbbcbbbcbccabcbabaca'
-print("len=",len(s))
-print(brute_force(s))
+#print("len=",len(s))
+#print(brute_force(s))
 print(geometricTrick(s))
+print(brute_force2(s))
 print("expected 2256")
