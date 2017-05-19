@@ -1,0 +1,3 @@
+
+Program("array_left_rotation.cpp", CCFLAGS=[ '/EHsc'])
+
