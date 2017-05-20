@@ -1,3 +1,4 @@
 
 Program("array_left_rotation.cpp", CCFLAGS=[ '/EHsc'])
+Program("algo_crush.cpp", CCFLAGS=[ '/EHsc'])
 
