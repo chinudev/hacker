@@ -1,0 +1,3 @@
+
+Program("big_sort.cpp", CCFLAGS=[ '/EHsc'])
+
