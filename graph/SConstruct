@@ -1,0 +1,4 @@
+
+Program("roads.cpp", CCFLAGS=[ '/EHsc'])
+Program("journey_to_moon.cpp", CCFLAGS=[ '/EHsc'])
+
