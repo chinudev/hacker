@@ -5,5 +5,4 @@ Program("duplication.cpp", CCFLAGS=[ '/EHsc'])
 Program("monster.cpp", CCFLAGS=[ '/EHsc'])
 Program("matrix_rotate.cpp", CCFLAGS=[ '/EHsc'])
 Program("circular_walk.cpp", CCFLAGS=[ '/EHsc'])
-Program("pair.cpp", CCFLAGS=[ '/EHsc'])
 

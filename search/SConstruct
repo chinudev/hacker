@@ -1,0 +1,3 @@
+
+Program("pair.cpp", CCFLAGS=[ '/EHsc'])
+
