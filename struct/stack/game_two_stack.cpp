@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <iostream>
 #include <vector>
+#include <assert.h>
 
 using namespace std;
 
@@ -20,7 +21,7 @@ uint64_t findMax(const vector<uint64_t>& vectorA,
     //   with all elements selected
     for (indexA=0; indexA < vectorA.size(); indexA++) {
         currentSum += vectorA[indexA];
-        if (currentSum >= maxSum) {
+        if (currentSum > maxSum) {
             currentSum -= vectorA[indexA]; 
             break;
         }
@@ -35,7 +36,7 @@ uint64_t findMax(const vector<uint64_t>& vectorA,
 
         currentSum += vectorB[indexB];
 
-        if (currentSum >= maxSum) {
+        if (currentSum > maxSum) {
             // The previous iteration had sum less than maxSum. 
             //  check if that qualifies as having max elements
             int numElems = indexA+1 + indexB;
@@ -51,11 +52,42 @@ uint64_t findMax(const vector<uint64_t>& vectorA,
             if ((currentSum > maxSum) && (indexA < 0)) break;
         }
     }
+
+    // final check to ensure we cover the case when all elements of
+    //  vectorB are used without going over maxSum
+    if (currentSum <= maxSum) {
+        int numElems = indexA+1 + indexB;
+        if (numElems > maxElems) maxElems = numElems; 
+    }
+
     return maxElems;
+}
+
+void testMax() 
+{
+    // no match 
+    assert(findMax({}, {}, 0) == 0);  
+    assert(findMax({2,1}, {2,3}, 1) == 0);  
+
+    // match left side
+    assert(findMax({2,1}, {2,3}, 2) == 1); 
+    assert(findMax({2,1}, {2,3}, 3) == 2);
+    assert(findMax({2,1}, {}, 3) == 2);
+
+    // match right side
+    assert(findMax({8,2}, {1,1}, 1) == 1);
+    assert(findMax({8,2}, {1,1}, 2) == 2);
+    assert(findMax({8,2}, {1,1}, 3) == 2);
+
+    assert(findMax({5,4}, {5,4}, 9) == 2);
+    assert(findMax({5,4}, {5,4}, 18) == 4);
 }
 
 int main()
 {
+
+    testMax();
+
     int numGames; 
     cin >> numGames; 
     for (; numGames > 0; numGames--) {
@@ -81,3 +113,5 @@ int main()
         cout << findMax(vectorA, vectorB, maxSum) << endl;
     }
 }
+
+
