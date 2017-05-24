@@ -1,0 +1,3 @@
+
+Program("game_two_stack.cpp", CCFLAGS=[ '/EHsc'])
+
