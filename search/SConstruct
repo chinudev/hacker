@@ -1,3 +1,4 @@
 
 Program("pair.cpp", CCFLAGS=[ '/EHsc'])
+Program("max_sub_sum.cpp", CCFLAGS=[ '/EHsc'])
 
