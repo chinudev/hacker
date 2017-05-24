@@ -1,4 +1,5 @@
 
 Program("roads.cpp", CCFLAGS=[ '/EHsc'])
 Program("journey_to_moon.cpp", CCFLAGS=[ '/EHsc'])
+Program("bfs_shortest.cpp", CCFLAGS=[ '/EHsc'])
 
