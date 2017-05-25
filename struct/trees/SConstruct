@@ -1,3 +1,4 @@
 
 Program("swap_nodes_algo.cpp", CCFLAGS=[ '/EHsc'])
+Program("is_binary.cpp", CCFLAGS=[ '/EHsc'])
 
