@@ -7,46 +7,9 @@
 
 using namespace std;
 
-struct SeqNode 
+
+void findMinSequence( const string leftNum, const string rightNum, vector<pair<int,int>>& seqVector) 
 {
-    SeqNode(int level_, int count_) : level(level_), count(count_) {}
-    SeqNode() : level(0), count(0) {}
-    int level;
-    int count;
-};
-
-
-// return number = number - 1 and fill with leading zeros to match supplied length
-string adjustLeftString(const string number, int length) 
-{
-    // fill with 0s
-    string output(length, '0');  
-    int offset = length - number.length();
-
-    // subtract 1 and copy over to output string 
-    int carry=-1;
-    for (int index=number.length()-1; index >=0; index--) {
-        int digit = number[index] - '0';
-        digit += carry;
-
-        if (digit < 0) {
-            assert(digit == -1);
-            digit = 9;
-            carry=-1;
-        } else {
-            carry=0;
-        }
-        output[offset+index] = char(digit + '0');
-    }
-    assert(carry == 0);
-
-    return output;
-}
-
-
-vector<pair<int,int>> findMinSequence( const string leftNum, const string rightNum) 
-{
-    vector<pair<int,int>> seqVector;
     //cout << "Processing " << leftNum << " " << rightNum << endl;
 
     int offset = rightNum.length() - leftNum.length();
@@ -73,7 +36,7 @@ vector<pair<int,int>> findMinSequence( const string leftNum, const string rightN
     if (MSDdiff == -1) {
         //cout << "   Operation level 0 count 1" << endl;
         seqVector.push_back({0,1});
-        return seqVector;
+        return;
     }
     assert(MSDdiff >= 0);
 
@@ -140,50 +103,59 @@ vector<pair<int,int>> findMinSequence( const string leftNum, const string rightN
     }
 
 
-    return seqVector;
+    return;
+}
+
+
+void testcase(const string leftNum, const string rightNum, const vector<pair<int,int>>& expected) 
+{
+    vector<pair<int,int>> resultVector;
+    findMinSequence(leftNum, rightNum, resultVector);
+    assert(resultVector == expected);
+
 }
 
 void test() 
 {
-    /*
-    cout << "100 " << adjustLeftString("100",3) << endl;
-    cout << "100 " << adjustLeftString("100",5) << endl;
-    cout << "99 " << adjustLeftString("99",2) << endl;
-    cout << "99 " << adjustLeftString("99",5) << endl;
-    */
-
 
     // Single element special case
-    assert(findMinSequence("1", "1") == (vector<pair<int,int>>{{0,1}}));
-    assert(findMinSequence("22222231", "22222231") == (vector<pair<int,int>>{{0,1}}));
+    testcase("1", "1",vector<pair<int,int>>{{0,1}});
+
+    // Single element special case
+    testcase("1", "1", vector<pair<int,int>>{{0,1}});
+    testcase("22222231", "22222231", vector<pair<int,int>>{{0,1}});
 
     // level 0 operations
-    assert(findMinSequence("0", "9") == (vector<pair<int,int>>{{0,10}}));
-    assert(findMinSequence("0", "10") == (vector<pair<int,int>>{{0,1},{1,1}}));
-    assert(findMinSequence("0", "11") == (vector<pair<int,int>>{{0,1},{1,1},{0,1}}));
-    assert(findMinSequence("1", "9") == (vector<pair<int,int>>{{0,9}}));
-    assert(findMinSequence("1", "10") == (vector<pair<int,int>>{{1,1}}));
-    assert(findMinSequence("1", "11") == (vector<pair<int,int>>{{1,1},{0,1}}));
+    testcase("0", "9", vector<pair<int,int>>{{0,10}});
+    testcase("0", "10", vector<pair<int,int>>{{0,1},{1,1}});
+    testcase("0", "11", vector<pair<int,int>>{{0,1},{1,1},{0,1}});
+    testcase("1", "9", vector<pair<int,int>>{{0,9}});
+    testcase("1", "10", vector<pair<int,int>>{{1,1}});
+    testcase("1", "11", vector<pair<int,int>>{{1,1},{0,1}});
 
-    assert(findMinSequence("2", "12") == (vector<pair<int,int>>{{0,11}}));
-    assert(findMinSequence("2", "22") == (vector<pair<int,int>>{{0,9},{1,1},{0,2}}));
-    assert(findMinSequence("12", "22") == (vector<pair<int,int>>{{0,11}}));
+    testcase("2", "12", vector<pair<int,int>>{{0,11}});
+    testcase("2", "22", vector<pair<int,int>>{{0,9},{1,1},{0,2}});
+    testcase("12", "22", vector<pair<int,int>>{{0,11}});
 
-    assert(findMinSequence("5", "1422") == (vector<pair<int,int>>{{0,6},{1,9},{2,13},{1,2},{0,2}}));
-    assert(findMinSequence("42", "1024") == (vector<pair<int,int>>{{0,9},{1,5},{2,9},{1,2},{0,4}}));
+    testcase("980001", "990000", vector<pair<int,int>>{{4,1}});
 
-    assert(findMinSequence("22222231", "22222240") == (vector<pair<int,int>>{{1,1}}));
+    testcase("5", "1422", vector<pair<int,int>>{{0,6},{1,9},{2,13},{1,2},{0,2}});
+    testcase("42", "1024", vector<pair<int,int>>{{0,9},{1,5},{2,9},{1,2},{0,4}});
+
+    testcase("22222231", "22222240", vector<pair<int,int>>{{1,1}});
+
 }
 
 int main() 
 {
 
-    //test();
+    test();
 
     string leftNum, rightNum;
     cin >> leftNum >> rightNum;
 
-    vector<pair<int,int>> resultVector = findMinSequence(leftNum, rightNum);
+    vector<pair<int,int>> resultVector;
+    findMinSequence(leftNum, rightNum, resultVector);
 
     cout << resultVector.size() << endl;
     for (auto entry : resultVector) {
