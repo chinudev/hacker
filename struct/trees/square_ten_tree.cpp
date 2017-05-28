@@ -8,7 +8,53 @@
 
 using namespace std;
 
-typedef vector<pair<int,uint64_t>> SeqType;
+typedef vector<pair<int,string>> SeqType;
+
+char DigitMap[] = {'0','1','2','3','4','5','6','7','8','9'};
+
+
+string addString(string first, string second) 
+{
+    // length of "first" should be greater than or equal to "second"
+    if (first.length() < second.length()) {
+        return addString(second, first);
+    }
+
+    int carry=0;
+    int offset=first.length() - second.length();
+    assert(offset >= 0);
+
+    int firstDigit, secondDigit;
+    for (int i=first.length()-1; i>=0; i--) {
+
+        firstDigit = first[i]-'0';
+        int secondIndex=i-offset;
+        if (secondIndex >= 0) secondDigit = second[secondIndex] - '0' ;
+        else secondDigit = 0;
+
+        int add = carry + firstDigit  + secondDigit;
+        if (add >= 10) {
+            carry = 1;
+            add = add % 10;
+        } else {
+            carry = 0;
+        }
+        first[i] = DigitMap[add];
+    }
+    if (carry) {
+        return string("1").append(first);
+    } else {
+        return first;
+    }
+}
+
+void test_add() 
+{
+    assert(addString("1", "1") == "2");
+    assert(addString("12345", "1") == "12346");
+    assert(addString("99", "112345") == "112444");
+    assert(addString("99", "1") == "100");
+}
 
 
 void findMinSequence( const string leftNum, const string rightNum, SeqType& seqVector) 
@@ -40,7 +86,7 @@ void findMinSequence( const string leftNum, const string rightNum, SeqType& seqV
         assert(rightNum[rightNum.length()] >= leftNum[leftNum.length()]);
         int diff = rightNum[rightNum.length()-1] - leftNum[leftNum.length()-1];
         //cout << "   Operation level 0 count " << diff+1 <<  endl;
-        seqVector.push_back({0,diff+1});
+        seqVector.push_back({0,to_string(diff+1)});
         return;
     }
     assert(diffDigit > 0);
@@ -70,7 +116,7 @@ void findMinSequence( const string leftNum, const string rightNum, SeqType& seqV
         else carry=1;
 
         //cout << "   Operation level 0 count " << diff <<  endl;
-        if (diff > 0) seqVector.push_back({0,diff});
+        if (diff > 0) seqVector.push_back({0,to_string(diff)});
         level++; leftIndex--;rightIndex--;
     }
 
@@ -98,7 +144,7 @@ void findMinSequence( const string leftNum, const string rightNum, SeqType& seqV
             leftIndex--; rightIndex--;
         }
         //cout << "   Operation level " << level << " count " << levelCount <<  endl;
-        if (levelCount > 0) seqVector.push_back({level,levelCount});
+        if (levelCount > 0) seqVector.push_back({level,to_string(levelCount)});
     }
 
     // Handle MaxDiffLevel 
@@ -130,7 +176,7 @@ void findMinSequence( const string leftNum, const string rightNum, SeqType& seqV
             if (rightIndex < 0) break;
         }
         //cout << "   Operation levelx " << level << " count " << levelCount <<  endl;
-        if (levelCount > 0) seqVector.push_back({level,levelCount});
+        if (levelCount > 0) seqVector.push_back({level,to_string(levelCount)});
 
         level--;
         rightIndex = tempRightIndex;
@@ -155,9 +201,10 @@ void findMinSequence( const string leftNum, const string rightNum, SeqType& seqV
         //cout << "   Operation level " << level << " count " << levelCount <<  endl;
         if (levelCount > 0) {
             if (seqVector.back().first == level) {
-                seqVector.back().second += levelCount;
+                seqVector.back().second = addString(seqVector.back().second,to_string(levelCount));
+                //seqVector.back().second += levelCount;
             } else {
-                seqVector.push_back({level,levelCount});
+                seqVector.push_back({level,to_string(levelCount)});
             }
         }
     }
@@ -181,34 +228,36 @@ void testcase(const string leftNum, const string rightNum, const SeqType& expect
 void test() 
 {
 
-    // Single element special case
-    testcase("1", "1",SeqType{{0,1}});
+    test_add();
 
     // Single element special case
-    testcase("1", "1", SeqType{{0,1}});
-    testcase("22222231", "22222231", SeqType{{0,1}});
+    testcase("1", "1",SeqType{{0,"1"}});
+
+    // Single element special case
+    testcase("1", "1", SeqType{{0,"1"}});
+    testcase("22222231", "22222231", SeqType{{0,"1"}});
 
 
-    testcase("0", "9", SeqType{{0,10}});
-    testcase("0", "10", SeqType{{0,1},{1,1}});
-    testcase("0", "11", SeqType{{0,1},{1,1},{0,1}});
-    testcase("1", "9", SeqType{{0,9}});
-    testcase("1", "10", SeqType{{1,1}});
-    testcase("1", "11", SeqType{{1,1},{0,1}});
+    testcase("0", "9", SeqType{{0,"10"}});
+    testcase("0", "10", SeqType{{0,"1"},{1,"1"}});
+    testcase("0", "11", SeqType{{0,"1"},{1,"1"},{0,"1"}});
+    testcase("1", "9", SeqType{{0,"9"}});
+    testcase("1", "10", SeqType{{1,"1"}});
+    testcase("1", "11", SeqType{{1,"1"},{0,"1"}});
 
-    testcase("2", "12", SeqType{{0,11}});
-    testcase("2", "22", SeqType{{0,9},{1,1},{0,2}});
-    testcase("12", "22", SeqType{{0,11}});
+    testcase("2", "12", SeqType{{0,"11"}});
+    testcase("2", "22", SeqType{{0,"9"},{1,"1"},{0,"2"}});
+    testcase("12", "22", SeqType{{0,"11"}});
 
-    testcase("980001", "990000", SeqType{{3,1}});
-    testcase("24274044", "99906984", SeqType{{0,7},{1,5},{2,59},{3,7562},{2,69}, {1,8},{0,4}});
+    testcase("980001", "990000", SeqType{{3,"1"}});
 
-    testcase("124274044", "199906984", SeqType{{0,7},{1,5},{2,59},{3,7562},{2,69}, {1,8},{0,4}});
-    testcase("99124274044", "99199906984", SeqType{{0,7},{1,5},{2,59},{3,7562},{2,69}, {1,8},{0,4}});
-    testcase("4274044", "9906984", SeqType{{0,7},{1,5},{2,59},{3,562},{2,69}, {1,8},{0,4}});
+    testcase(   "24274044",    "99906984", SeqType{{0,"7"},{1,"5"},{2,"59"},{3,"7562"},{2,"69"}, {1,"8"},{0,"4"}});
+    testcase(  "124274044",   "199906984", SeqType{{0,"7"},{1,"5"},{2,"59"},{3,"7562"},{2,"69"}, {1,"8"},{0,"4"}});
+    testcase("99124274044", "99199906984", SeqType{{0,"7"},{1,"5"},{2,"59"},{3,"7562"},{2,"69"}, {1,"8"},{0,"4"}});
+    testcase(    "4274044",     "9906984", SeqType{{0,"7"},{1,"5"},{2,"59"},{3,"562"}, {2,"69"}, {1,"8"},{0,"4"}});
 
-    testcase("5", "1422", SeqType{{0,6},{1,9},{2,13},{1,2},{0,2}});
-    testcase("42", "1024", SeqType{{0,9},{1,5},{2,9},{1,2},{0,4}});
+    testcase("5", "1422", SeqType{{0,"6"},{1,"9"},{2,"13"},{1,"2"},{0,"2"}});
+    testcase("42", "1024", SeqType{{0,"9"},{1,"5"},{2,"9"},{1,"2"},{0,"4"}});
 
     /*
     testcase("124274044", "299906984", SeqType{{4,1}});
@@ -220,7 +269,7 @@ void test()
 int main() 
 {
 
-    //test();
+    test();
 
     string leftNum, rightNum;
     cin >> leftNum >> rightNum;
