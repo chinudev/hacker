@@ -57,6 +57,7 @@ void test_add()
 }
 
 
+
 void findMinSequence( const string leftNum, const string rightNum, SeqType& seqVector) 
 {
     //cout << "Processing " << leftNum << " " << rightNum << endl;
@@ -121,11 +122,15 @@ void findMinSequence( const string leftNum, const string rightNum, SeqType& seqV
     }
 
     //Go from level 1 to MaxDiffLevel-1
+    
+    string stringBuffer;
+    stringBuffer.reserve(512*1024);
+
     for (; level < MaxDiffLevel; level++) {
-        uint64_t levelCount=0;
-        uint64_t digitMultiple=1;
         int digitsInLevel = 1<<(level-1);
-        for (; digitsInLevel > 0; digitsInLevel--) {
+        stringBuffer.clear();
+
+        for (int charIndex=digitsInLevel; charIndex > 0; charIndex--) {
             //cout << "      level " << level << " left " << leftIndex << " right " << rightIndex << endl;
             int leftDigit=carry; 
             if (leftIndex >= 0) leftDigit += leftNum[leftIndex] - '0';
@@ -138,13 +143,19 @@ void findMinSequence( const string leftNum, const string rightNum, SeqType& seqV
                 carry = 1;
             }
 
-            levelCount = levelCount + digitMultiple*diff;
-            digitMultiple = digitMultiple*10;
+            stringBuffer +=char(diff + '0');
 
             leftIndex--; rightIndex--;
         }
-        //cout << "   Operation level " << level << " count " << levelCount <<  endl;
-        if (levelCount > 0) seqVector.push_back({level,to_string(levelCount)});
+        auto rbegin = stringBuffer.rbegin();
+        auto rend = stringBuffer.rend();
+        while ((rbegin != rend) && *rbegin == '0') rbegin++;
+        if (rbegin != rend) {
+            string levelCountStr(rbegin,rend);
+            seqVector.push_back({level,levelCountStr});
+            //cout << "   Operation level " << level << " count :" << levelCountStr << endl;
+        }
+
     }
 
     // Handle MaxDiffLevel 
@@ -152,8 +163,8 @@ void findMinSequence( const string leftNum, const string rightNum, SeqType& seqV
         int tempLeftIndex = leftIndex+1; 
         int tempRightIndex = rightIndex+1; 
 
-        uint64_t levelCount=0;
-        uint64_t digitMultiple=1;
+        stringBuffer.clear();
+
         int digitsInLevel = 1<<(level-1);
         for (; digitsInLevel > 0; digitsInLevel--) {
             int leftDigit=carry; 
@@ -168,15 +179,19 @@ void findMinSequence( const string leftNum, const string rightNum, SeqType& seqV
                 carry = 1;
             }
 
-            //cout << "      level " << level << " left " << leftIndex << " right " << rightIndex  << " diff " << diff << endl;
-            levelCount = levelCount + digitMultiple*diff;
-            digitMultiple = digitMultiple*10;
+            stringBuffer +=char(diff + '0');
 
             leftIndex--; rightIndex--;
             if (rightIndex < 0) break;
         }
-        //cout << "   Operation levelx " << level << " count " << levelCount <<  endl;
-        if (levelCount > 0) seqVector.push_back({level,to_string(levelCount)});
+        auto rbegin = stringBuffer.rbegin();
+        auto rend = stringBuffer.rend();
+        while ((rbegin != rend) && *rbegin == '0') rbegin++;
+        if (rbegin != rend) {
+            string levelCountStr(rbegin,rend);
+            seqVector.push_back({level,levelCountStr});
+            //cout << "   Operation levelx " << level << " count :" << levelCountStr << endl;
+        } 
 
         level--;
         rightIndex = tempRightIndex;
@@ -185,28 +200,34 @@ void findMinSequence( const string leftNum, const string rightNum, SeqType& seqV
 
     // Go from level MaxDiffLevel-1 down to 0
     for (; level >= 0; level--) {
-        uint64_t levelCount=0;
-        uint64_t digitMultiple=1;
         int digitsInLevel;
+        stringBuffer.clear();
+
         if (level == 0) digitsInLevel=1;
         else digitsInLevel = 1<<(level-1);
 
         for (; digitsInLevel > 0; digitsInLevel--) {
             //cout << "      level " << level << " left " << leftIndex << " right " << rightIndex << endl;
             int rightDigit = rightNum[rightIndex] - '0';
-            levelCount = levelCount*10 + rightDigit;
+
+            stringBuffer +=char(rightDigit + '0');
 
             leftIndex++; rightIndex++;
         }
-        //cout << "   Operation level " << level << " count " << levelCount <<  endl;
-        if (levelCount > 0) {
+
+        auto begin = stringBuffer.begin();
+        auto end = stringBuffer.end();
+        while ((begin != end) && *begin == '0') begin++;
+
+        if (begin != end) {
+            string levelCountStr(begin,end);
+
             if (seqVector.back().first == level) {
-                seqVector.back().second = addString(seqVector.back().second,to_string(levelCount));
-                //seqVector.back().second += levelCount;
+                seqVector.back().second = addString(seqVector.back().second,levelCountStr);
             } else {
-                seqVector.push_back({level,to_string(levelCount)});
+                seqVector.push_back({level,levelCountStr});
             }
-        }
+        } 
     }
 
 
@@ -259,17 +280,12 @@ void test()
     testcase("5", "1422", SeqType{{0,"6"},{1,"9"},{2,"13"},{1,"2"},{0,"2"}});
     testcase("42", "1024", SeqType{{0,"9"},{1,"5"},{2,"9"},{1,"2"},{0,"4"}});
 
-    /*
-    testcase("124274044", "299906984", SeqType{{4,1}});
-    testcase("22222231", "22222240", SeqType{{1,1}});
-    */
-
 }
 
 int main() 
 {
 
-    test();
+    //test();
 
     string leftNum, rightNum;
     cin >> leftNum >> rightNum;
