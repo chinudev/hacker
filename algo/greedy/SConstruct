@@ -1,0 +1,3 @@
+
+Program("board_cutting.cpp", CCFLAGS=[ '/EHsc'])
+
