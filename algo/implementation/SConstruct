@@ -1,0 +1,3 @@
+
+Program("matrix_rotate.cpp", CCFLAGS=[ '/EHsc'])
+
