@@ -1,38 +1,25 @@
 
-def threeElemCheck(threeElemList):
-    if (len(threeElemList) == 3) and  \
-       (threeElemList in ([2,3,1], [3,1,2])):
+
+def willItWork(numList):
+
+    length = len(numList)
+
+    for i in range(length-2):
+        numIndex = numList.index(i+1)
+
+        if (numIndex != i): 
+            numList = numList[:i] + [i+1] + numList[i:numIndex] + numList[numIndex+1:]
+            #print("*****",numList)
+            if ((numIndex-i) % 2 == 1):
+                #print("*****swapping")
+                numList[i+1], numList[i+2] = numList[i+2], numList[i+1]
+        #print("***",i,numIndex,numList)
+
+    #print(numList)
+    if ((numList[-1] == length) and (numList[-2] == length-1)):
         return True
     else:
         return False
-
-
-def willItWork(numList):
-    mismatchIndex = 0
-
-    match = True   # tracks if everything as matched so far
-    i=0
-    while (i < len(numList)):
-        if (i+1 != numList[i]): 
-            if match == False:
-                return False
-            match = False
-
-            if (i+3 > len(numList)):
-                return False
-
-            # check if next 3 
-            threeElemList = [numList[i]   - i, 
-                             numList[i+1] - i, 
-                             numList[i+2] - i]
-            if threeElemCheck(threeElemList) == True:
-                i += 2
-            else:
-                return False
-
-        i += 1
-
-    return True
 
 
 
