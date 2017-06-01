@@ -1,4 +1,5 @@
 
 Program("pair.cpp", CCFLAGS=[ '/EHsc'])
 Program("max_sub_sum.cpp", CCFLAGS=[ '/EHsc'])
+Program("connected_grid_cell.cpp", CCFLAGS=[ '/EHsc'])
 
