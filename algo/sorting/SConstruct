@@ -1,3 +1,4 @@
 
 Program("closest_number.cpp", CCFLAGS=[ '/EHsc'])
+Program("big_sort.cpp", CCFLAGS=[ '/EHsc'])
 
