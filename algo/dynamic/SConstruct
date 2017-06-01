@@ -1,0 +1,3 @@
+
+Program("coin_change.cpp", CCFLAGS=[ '/EHsc'])
+
