@@ -88,7 +88,7 @@ public:
     // Return decimal value for the Nth deci-binary number
     int GetDecimal(uint64_t numIndex) 
     {
-        cout << "GetDecimal " << numIndex  << " " << DeciCombos.size() << " " << DeciCombos.back() << endl;
+        //cout << "GetDecimal " << numIndex  << " " << DeciCombos.size() << " " << DeciCombos.back() << endl;
         assert(numIndex > 0);
         for (int i=0; i < DeciCombos.size(); i++) {
             if (DeciCombos[i] >= numIndex) return i;
@@ -97,9 +97,50 @@ public:
         return -1;
     }
 
-    // Find the Nth deci-binary number where indexN gives N. 
-    //
-    int GetDeciBinary(uint64_t indexN)
+
+    // A given decimal number can be expressed in various ways in deci-binary 
+    // This method returns the Nth of this, with the additional constraint 
+    //   that only maxDigit positions be used (0 => 1 digit allowed)
+    uint64_t GetDeciBinary(int decimalNumber, uint64_t indexN, int maxDigit)
+    {
+
+        //cout << "MaxDigit = " << maxDigit << " decimal " << decimalNumber << " indexN " << indexN << endl;
+
+        if (maxDigit == 0) {
+            assert(decimalNumber < 10);
+            return decimalNumber;
+        }
+
+        // For this digit (maxDigit): find number of combos when digit=0,1,..9
+        // 
+        for (int digitVal=0; digitVal < 10; digitVal++) {
+
+            // I was missing this check in previous implemenation. It is possible 
+            //   that current decimalNumber is not at all possible with fewer digits and 
+            //   hence won't have an entry for maxDigit-1 vector e.g. 12 is not possible with 0
+            //   in digit1 position; need at least 2 in digit1 viz 28
+            if (decimalNumber < DeciCache[maxDigit-1].size()) {
+                //cout << "*** Digit " << digitVal << " dec " << decimalNumber << " indexN "<< indexN << " next " << DeciCache[maxDigit-1][decimalNumber] << endl;
+
+                if ( DeciCache[maxDigit-1][decimalNumber] >= indexN) {
+
+                    uint64_t deciBinary = GetDeciBinary(decimalNumber, indexN, maxDigit - 1);
+                    deciBinary +=  digitVal*pow(10,maxDigit);
+                    return deciBinary;
+                }
+                indexN -= DeciCache[maxDigit-1][decimalNumber];
+            } else {
+                //cout << "*** Digit " << digitVal << " dec " << decimalNumber << " indexN "<< indexN << " no entry for next " << endl;
+            }
+            decimalNumber -= (1 << maxDigit);
+        }
+
+        // Should never reach here. Maybe assert ?
+        return -1;
+    }
+
+
+    uint64_t GetDeciBinary(uint64_t indexN)
     {
         assert(indexN > 0);
 
@@ -109,6 +150,11 @@ public:
 
         int decimalValue = GetDecimal(indexN);
         assert(decimalValue > 1);
+
+        //cout << "Looking for indexN = " << indexN << " decimal value = " << decimalValue << endl;
+        //cout << "Combo values for i-1 " << DeciCombos[decimalValue-1] << endl;
+        //cout << "                 i   " << DeciCombos[decimalValue] << endl;
+
         indexN -= DeciCombos[decimalValue-1];
         assert(indexN > 0);
 
@@ -117,35 +163,10 @@ public:
         // Maximum power of 2 that can be used for this decimal value
         int pow2 = int(log2(decimalValue));
         assert(pow2 > 0);
-        //cout << "decimal = " << decimalValue << " pow2 = " << pow2  << " indexN " << indexN << endl;
 
-        int indexSoFar=0;
-        // Consider each digit position (pow2) from right to left
-        for (;pow2 > 0; pow2--) {
-
-            // For this digit (pow2): find number of combos when digit=0,1,..9
-            //   when the cummulative count goes over indexN, step one back
-            for (int digitVal=0; digitVal < 10; digitVal++) {
-                int decimalValueForNextPower = decimalValue - digitVal * (1 << pow2);
-
-                if (indexSoFar + DeciCache[pow2-1][decimalValueForNextPower] >= indexN) {
-                    deciBinary = deciBinary*10 + digitVal;
-                    // Update decimalValue for next power
-                    decimalValue = decimalValue - digitVal * (1 << pow2);
-                    //cout << pow2 << " digit = " << digitVal << ": " << decimalValue << endl;
-                    break;
-                }
-                indexSoFar += DeciCache[pow2-1][decimalValueForNextPower];
-            }
-        }
-
-        //cout << pow2 << " digit = " << decimalValue << endl;
-        // Handle the last digit. 
-        assert(decimalValue < 10);
-        deciBinary = deciBinary*10 + decimalValue;
-
-        return deciBinary;
+        return GetDeciBinary(decimalValue, indexN, pow2);
     }
+
 
 };
 
@@ -169,12 +190,13 @@ int main()
 
     DeciNumber deciNumber; 
 
+    //cout << deciNumber.GetDeciBinary(10000000000000) << endl;
+
     int q;
     cin >> q;
     for(int a0 = 0; a0 < q; a0++){
         uint64_t x;
         cin >> x;
         cout << deciNumber.GetDeciBinary(x) << endl;
-        // your code goes here
     }
 }
