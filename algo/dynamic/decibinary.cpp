@@ -95,15 +95,35 @@ public:
     }
 
     // Return decimal value for the Nth deci-binary number
-    int GetDecimalAtIndex(uint64_t numIndex) 
+    //  Older linear search implementation. Keeping for comparison
+    int GetDecimalAtIndexLinear(uint64_t numIndex) 
     {
-        //cout << "GetDecimal " << numIndex  << " " << DeciCombos.size() << " " << DeciCombos.back() << endl;
         assert(numIndex > 0);
         for (int i=0; i < DeciCombos.size(); i++) {
             if (DeciCombos[i] >= numIndex) return i;
         }
         // didn't find the value 
         return -1;
+    }
+
+    // Return decimal value for the Nth deci-binary number
+    //  binary search version
+    int GetDecimalAtIndex(uint64_t numIndex) 
+    {
+        assert(numIndex > 0);
+        int left = 0; 
+        int right = DeciCombos.size()-1;
+
+        while (right - left > 1) {
+            int mid = int((right+left)/2);
+            if (DeciCombos[mid] == numIndex) return mid;
+            if (DeciCombos[mid] < numIndex) left = mid;
+            else right = mid;
+        }
+
+        if (DeciCombos[left] >= numIndex) return left;
+        assert(DeciCombos[right] > numIndex);
+        return right;
     }
 
 
@@ -223,7 +243,7 @@ void test()
 
 int main()
 {
-    test();
+    //test();
 
     DeciNumber deciNumber; 
 
