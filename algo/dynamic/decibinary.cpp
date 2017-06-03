@@ -9,6 +9,15 @@
 
 using namespace std;
 
+uint64_t myPow(uint64_t num, uint64_t pow)
+{
+    uint64_t result=1;
+    for (uint64_t i=0; i < pow; i++) {
+        result = result*num;
+    }
+    return result;
+}
+
 // Mostly using class as a namespace :-) 
 class DeciNumber {
 
@@ -86,7 +95,7 @@ public:
     }
 
     // Return decimal value for the Nth deci-binary number
-    int GetDecimal(uint64_t numIndex) 
+    int GetDecimalAtIndex(uint64_t numIndex) 
     {
         //cout << "GetDecimal " << numIndex  << " " << DeciCombos.size() << " " << DeciCombos.back() << endl;
         assert(numIndex > 0);
@@ -96,6 +105,7 @@ public:
         // didn't find the value 
         return -1;
     }
+
 
 
     // A given decimal number can be expressed in various ways in deci-binary 
@@ -108,6 +118,7 @@ public:
 
         if (maxDigit == 0) {
             assert(decimalNumber < 10);
+            assert(indexN == 1);
             return decimalNumber;
         }
 
@@ -125,7 +136,8 @@ public:
                 if ( DeciCache[maxDigit-1][decimalNumber] >= indexN) {
 
                     uint64_t deciBinary = GetDeciBinary(decimalNumber, indexN, maxDigit - 1);
-                    deciBinary +=  digitVal*pow(10,maxDigit);
+                    deciBinary +=  digitVal*myPow(10,maxDigit);
+                    //cout << "*** returning for digit " << maxDigit << " " << deciBinary << endl;
                     return deciBinary;
                 }
                 indexN -= DeciCache[maxDigit-1][decimalNumber];
@@ -140,6 +152,21 @@ public:
     }
 
 
+    // convert given deci-binary number into decimal
+    uint64_t ToDecimal(uint64_t deciBinary)
+    {
+        uint64_t decimal=0;
+        uint64_t power2=1;
+        while (deciBinary > 0){
+            int digit = deciBinary % 10;
+            deciBinary = uint64_t(deciBinary/10);
+            decimal += digit*power2;
+            power2 *= 2;
+        }
+        return decimal;
+    }
+
+
     uint64_t GetDeciBinary(uint64_t indexN)
     {
         assert(indexN > 0);
@@ -148,7 +175,7 @@ public:
         if (indexN == 1) return 0;
         if (indexN == 2) return 1;
 
-        int decimalValue = GetDecimal(indexN);
+        int decimalValue = GetDecimalAtIndex(indexN);
         assert(decimalValue > 1);
 
         //cout << "Looking for indexN = " << indexN << " decimal value = " << decimalValue << endl;
@@ -173,24 +200,32 @@ public:
 void test()
 {
     DeciNumber deciNumber; 
-    assert(deciNumber.GetDecimal(1) == 0);
-    assert(deciNumber.GetDecimal(2) == 1);
-    assert(deciNumber.GetDecimal(7) == 4);
-    assert(deciNumber.GetDecimal(8) == 4);
-    assert(deciNumber.GetDecimal(10) == 4);
+    assert(deciNumber.GetDecimalAtIndex(1) == 0);
+    assert(deciNumber.GetDecimalAtIndex(2) == 1);
+    assert(deciNumber.GetDecimalAtIndex(7) == 4);
+    assert(deciNumber.GetDecimalAtIndex(8) == 4);
+    assert(deciNumber.GetDecimalAtIndex(10) == 4);
 
     //cout << "Size in MiB = " << deciNumber.GetSize()/(1000*1000) << endl;
+    
+    assert(myPow(2,0) == 1);
+    assert(myPow(2,2) == 4);
+    assert(myPow(10,4) == 10000);
+    assert(myPow(10,14) == 100000000000000ULL);
+    assert(myPow(10,15) == 1000000000000000ULL);
+    assert(myPow(10,16) == 10000000000000000ULL);
 
+
+    assert(deciNumber.GetDeciBinary(3716282173562748) == 21102583914947437);
+    assert(deciNumber.GetDeciBinary(6900926474930045) == 14018710175370495 );
 }
 
 
 int main()
 {
-    //test();
+    test();
 
     DeciNumber deciNumber; 
-
-    //cout << deciNumber.GetDeciBinary(10000000000000) << endl;
 
     int q;
     cin >> q;
