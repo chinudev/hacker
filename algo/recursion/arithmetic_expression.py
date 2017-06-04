@@ -17,13 +17,13 @@ def getAnswer(numList, mod):
 
         for k in range(mod):
             if (modList[k] == 1):
-                newValue = (currNum + k) % mod
+                newValue = (k + currNum) % mod
                 newModList[newValue] = 1
 
-                newValue = (currNum - k) % mod
+                newValue = (k - currNum) % mod
                 newModList[newValue] = 1
 
-                newValue = (currNum * k) % mod
+                newValue = (k * currNum) % mod
                 newModList[newValue] = 1
 
         modList = newModList
@@ -65,7 +65,7 @@ def getAnswer(numList, mod):
                     break
         else:
             # exectuted if for loop exits without break
-            assert(true)
+            assert(False)
 
     assert(targetEntry == numList[0])
 
