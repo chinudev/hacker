@@ -1,3 +1,4 @@
 
 Program("dna_health.cpp", CCFLAGS=[ '/EHsc'])
+Program("sherlock_valid.cpp", CCFLAGS=[ '/EHsc'])
 
