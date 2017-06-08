@@ -2,4 +2,5 @@
 Program("coin_change.cpp", CCFLAGS=[ '/EHsc'])
 Program("sherlock.cpp", CCFLAGS=[ '/EHsc'])
 Program("decibinary.cpp", CCFLAGS=[ '/EHsc'])
+Program("candies.cpp", CCFLAGS=[ '/EHsc'])
 
