@@ -4,4 +4,5 @@ Program("big_sort.cpp", CCFLAGS=[ '/EHsc'])
 Program("quicksort.cpp", CCFLAGS=[ '/EHsc'])
 Program("find_median.cpp", CCFLAGS=[ '/EHsc'])
 Program("fraud_activity.cpp", CCFLAGS=[ '/EHsc'])
+Program("min_loss.cpp", CCFLAGS=[ '/EHsc'])
 
