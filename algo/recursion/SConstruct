@@ -1,0 +1,3 @@
+
+Program("stone_division_re.cpp", CCFLAGS=[ '/EHsc'])
+
