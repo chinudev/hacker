@@ -86,7 +86,7 @@ public:
             first = (first*(ret.first + ret.second)) % MOD;
             allOpposite =  (allOpposite * ret.second) % MOD;
         }
-        uint64_t second = first - allOpposite;
+        uint64_t second = (first + MOD - allOpposite) % MOD;
         return pair<uint64_t,uint64_t>(first,second);
     }
 
@@ -94,8 +94,10 @@ public:
     uint64_t Divide(int startCity)
     {
         Node* startNode = &(nodeVector[startCity]);
-        auto result = Divide(startNode);
-        return (2 * result.second) ;
+        auto resultPair = Divide(startNode);
+        uint64_t result = (resultPair.second * 2 ) % MOD;
+
+        return result;
     }
 
 };
