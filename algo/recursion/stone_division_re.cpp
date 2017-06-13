@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int getNumMoves(uint64_t n, vector<uint64_t> numSet)
+uint64_t getNumMoves(uint64_t n, vector<uint64_t> numSet)
 {
     sort(numSet.begin(), numSet.end());
 
@@ -26,8 +26,6 @@ int getNumMoves(uint64_t n, vector<uint64_t> numSet)
         numMoves[i].second = numSet[i];
     }
 
-    numMoves[0].first = 1;  // Only one move possible for smallest number
-
     for (int i=0; i < numMoves.size(); i++) {
         uint64_t currMoves  = numMoves[i].first;
         uint64_t currNumber = numMoves[i].second;
@@ -37,41 +35,29 @@ int getNumMoves(uint64_t n, vector<uint64_t> numSet)
             //   currNumber is a possible next move. Check to see if using 
             //   currNumber would lead to a better move
             if (numSet[j] % currNumber == 0) {
-                if (numMoves[j].first <= currMoves) {
-                    numMoves[j].first = currMoves + 1;
+
+                // Possible moves  = 1 : Divide (numSet[j]) into number/currNumber piles 
+                //                  + numPiles * currMoves  : divide each pile 
+                uint64_t possMoves = uint64_t(numSet[j] / currNumber)* currMoves + 1;
+                if (numMoves[j].first < possMoves) {
+                    numMoves[j].first = possMoves;
                 }
             }
         }
     }
 
-    // Sort in descending order (note rbegin instead of begin)
-    sort(numMoves.rbegin(), numMoves.rend());
+    //for (auto entry : numMoves)  cout << " (" << entry.first <<"," << entry.second << ") ";
+    //cout << endl;
 
-    // figure out num moves for "n"
-    // 
-    uint64_t moves = 0;
-    uint64_t pileSize  = n;
-    uint64_t pileCount = 1;
-
-    //cout << "Finding moves for " << n << endl;
-    //cout << " found match pileSize,pileCount,moves  first,second" << endl;
-
-    bool keepLooping = true;
-    while (keepLooping) {
-        keepLooping = false;
-        for (auto entry : numMoves) {
-            if ((pileSize != entry.second) && (pileSize % entry.second == 0)) {
-                //cout << " found match " << pileSize << "," << pileCount << "," << moves << "   " << entry.first << "," << entry.second << endl;
-                moves += pileCount;
-                pileCount = pileCount * uint64_t(pileSize / entry.second);
-                pileSize = entry.second;
-                keepLooping = true;
-                break;
-            }
+    uint64_t maxMoves = 0;
+    for (pair<uint64_t,uint64_t> entry : numMoves) {
+        if ((n != entry.second) && (n % entry.second == 0)) {
+            uint64_t possMoves = uint64_t(n/entry.second)*entry.first + 1;
+            //cout << " iterate :" << entry.second << " = " << maxMoves << " " << possMoves << endl;
+            maxMoves = max(maxMoves, possMoves);
         }
     }
-
-    return moves;
+    return maxMoves;
 }
 
 
@@ -81,6 +67,8 @@ void test()
     assert(1 == getNumMoves(12, {2}));
     assert(0 == getNumMoves(12, {5}));
     assert(39 == getNumMoves(96, {48,6,8,2,3,4}));
+
+    assert(1112738372 == getNumMoves(99033715019, {1,99033715019,89,1112738371,864721694069}));
 }
 
 
@@ -98,6 +86,6 @@ int main()
         for (auto i=0; i < setSize; i++) {
             cin >> numSet[i];
         }
-        cout << getNumMoves(n, numSet);
+        cout << getNumMoves(n, numSet) << endl;
     }
 }
