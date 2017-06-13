@@ -14,21 +14,11 @@ uint64_t getNumMoves(uint64_t n, vector<uint64_t> numSet)
 
     // We will compute number of moves that can be generated  for each entry
     //   in numSet.
-    // We will store a pair to track each entry : 
-    //    first = numMoves 
-    //    second = value viz. numSet[i] 
-    // Initially this vector is in increasing order of value. Later 
-    //   we will sort this by numMoves
-
-    vector< pair<uint64_t, uint64_t>> numMoves(numSet.size());
-    for (int i=0; i < numSet.size(); i++) {
-        numMoves[i].first = 0;
-        numMoves[i].second = numSet[i];
-    }
+    vector< uint64_t> numMoves(numSet.size(),0);
 
     for (int i=0; i < numMoves.size(); i++) {
-        uint64_t currMoves  = numMoves[i].first;
-        uint64_t currNumber = numMoves[i].second;
+        uint64_t currMoves  = numMoves[i];
+        uint64_t currNumber = numSet[i];
 
         for (int j=i+1; j < numMoves.size(); j++) {
             // If this number (at index j)  is divisible by currNumber, then 
@@ -39,21 +29,18 @@ uint64_t getNumMoves(uint64_t n, vector<uint64_t> numSet)
                 // Possible moves  = 1 : Divide (numSet[j]) into number/currNumber piles 
                 //                  + numPiles * currMoves  : divide each pile 
                 uint64_t possMoves = uint64_t(numSet[j] / currNumber)* currMoves + 1;
-                if (numMoves[j].first < possMoves) {
-                    numMoves[j].first = possMoves;
+                if (numMoves[j] < possMoves) {
+                    numMoves[j] = possMoves;
                 }
             }
         }
     }
 
-    //for (auto entry : numMoves)  cout << " (" << entry.first <<"," << entry.second << ") ";
-    //cout << endl;
 
     uint64_t maxMoves = 0;
-    for (pair<uint64_t,uint64_t> entry : numMoves) {
-        if ((n != entry.second) && (n % entry.second == 0)) {
-            uint64_t possMoves = uint64_t(n/entry.second)*entry.first + 1;
-            //cout << " iterate :" << entry.second << " = " << maxMoves << " " << possMoves << endl;
+    for (int i=0; i < numMoves.size(); i++) {
+        if ((n != numSet[i]) && (n % numSet[i] == 0)) {
+            uint64_t possMoves = uint64_t(n/numSet[i])*numMoves[i] + 1;
             maxMoves = max(maxMoves, possMoves);
         }
     }
