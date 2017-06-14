@@ -12,23 +12,18 @@ int max_min(int k, vector<int> numVector)
     // start from both ends and keep dropping off the 
     sort(numVector.begin(), numVector.end());
 
+
+    int minUnfairness = 1 << 30;
+
     int leftIndex = 0;
-    int rightIndex = numVector.size()-1;
+    int rightIndex = k-1;
 
-    //cout << "Solving  for " << k << " left:" << leftIndex << " right:" << rightIndex << endl;
-    while (rightIndex - leftIndex >= k) {
-        int leftDiff = numVector[leftIndex+1] - numVector[leftIndex];
-        int rightDiff = numVector[rightIndex] - numVector[rightIndex-1];
-
-        if (leftDiff > rightDiff) {
-            leftIndex++;
-            //cout << " ** leftIndex " << leftIndex << endl;
-        } else { 
-            rightIndex--;
-            //cout << " ** rightIndex " << rightIndex << endl;
-        }
+    for (; rightIndex < numVector.size(); leftIndex++, rightIndex++) {
+        int unfairness = numVector[rightIndex] - numVector[leftIndex];
+        minUnfairness = min(minUnfairness, unfairness);
     }
-    return numVector[rightIndex] - numVector[leftIndex];
+
+    return minUnfairness;
 }
 
 
