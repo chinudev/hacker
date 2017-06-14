@@ -1,3 +1,4 @@
 
 Program("board_cutting.cpp", CCFLAGS=[ '/EHsc'])
+Program("max_min.cpp", CCFLAGS=[ '/EHsc'])
 
