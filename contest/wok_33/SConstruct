@@ -1,3 +1,6 @@
 
 Program("twin_array.cpp", CCFLAGS=[ '/EHsc'])
+Program("palindrome.cpp", CCFLAGS=[ '/EHsc'])
+Program("pal_subseq.cpp", CCFLAGS=[ '/EHsc'])
+Program("disjoint_set.cpp", CCFLAGS=[ '/EHsc'])
 
