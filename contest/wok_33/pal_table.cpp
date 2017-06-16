@@ -70,18 +70,40 @@ AnswerType getLargest(vector<vector<int>>& grid)
         for (int cols=maxCols; cols > 0; cols--) {
             if (rows*cols < maxArea) break;
 
+            vector<int> refDigitCount(10,0);
+
             for (int row=0; row <= maxRows-rows; row++) {
                 if (rows*cols <= maxArea) break;
 
-                for (int col=0; col <= maxCols-cols; col++) {
-                    vector<int> digitCount(10,0);
+                if (row == 0) {
+                    // For first row do the full computation
                     for (int i=0; i < rows; i++) {
                         for (int j=0; j < cols; j++) {
-                            digitCount[ grid[row+i][col+j] ] ++;
+                            refDigitCount[ grid[row+i][j] ] ++;
+                        }
+                    }
+                } else {
+                    // For successive rows update the computation
+                    for (int j=0; j < cols; j++) {
+                        refDigitCount[ grid[row-1][j] ] --;
+                        refDigitCount[ grid[row+rows-1][j] ] ++;
+                    }
+                }
+
+                vector<int> digitCount(10,0);
+                for (int k=0; k < 10; k++) digitCount[k] = refDigitCount[k];
+
+                for (int col=0; col <= maxCols-cols; col++) {
+
+                    // computation already done for col==0 case.
+                    if (col != 0) {
+                        // update 
+                        for (int i=0; i < rows; i++) {
+                            digitCount[ grid[row+i][col-1] ] --;
+                            digitCount[ grid[row+i][col+cols-1] ] ++;
                         }
                     }
 
-                    //cout << "checking " << row << " " << col << " : " << rows << " X " << cols << endl;
                     if (isPalindrome(digitCount)) {
                         maxArea = rows*cols;
                         answer.area = maxArea; 
@@ -90,6 +112,8 @@ AnswerType getLargest(vector<vector<int>>& grid)
                         answer.leftCol = col; 
                         answer.rightCol = col+cols-1;
                         break;
+                    }
+                    if ((rows == maxRows) && (cols == maxCols)) {
                     }
                 }
             }
@@ -121,11 +145,12 @@ void test()
 
     cout << "isPalindrome test passed " << endl;
 
+    assert(checkGetLargest({8,1,1,2,4} , {{3,4,5,6,7},{7,1,1,8,8},{9,1,1,9,9}}));
+
     assert(checkGetLargest({4,0,0,1,1} , {{1,1},{1,1}}));
     assert(checkGetLargest({9,0,0,2,2} , {{1,1,1},{1,0,1},{1,1,1}}));
     assert(checkGetLargest({8,0,0,1,3} , {{1,2,0,3,2},{0,1,2,3,4},{0,9,8,9,0}}));
 
-    assert(checkGetLargest({8,1,1,2,4} , {{3,4,5,6,7},{7,1,1,8,8},{9,1,1,9,9}}));
 
     cout << "getLargest test passed " << endl;
 }
@@ -133,7 +158,7 @@ void test()
 int main() 
 {
 
-    test();
+    //test();
     int rows, cols;
     cin >> rows >> cols;
     vector<vector<int>> grid(rows, vector<int>(cols,0));
