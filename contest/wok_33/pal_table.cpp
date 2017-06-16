@@ -125,13 +125,15 @@ void test()
     assert(checkGetLargest({9,0,0,2,2} , {{1,1,1},{1,0,1},{1,1,1}}));
     assert(checkGetLargest({8,0,0,1,3} , {{1,2,0,3,2},{0,1,2,3,4},{0,9,8,9,0}}));
 
+    assert(checkGetLargest({8,1,1,2,4} , {{3,4,5,6,7},{7,1,1,8,8},{9,1,1,9,9}}));
+
     cout << "getLargest test passed " << endl;
 }
 
 int main() 
 {
 
-    //test();
+    test();
     int rows, cols;
     cin >> rows >> cols;
     vector<vector<int>> grid(rows, vector<int>(cols,0));
