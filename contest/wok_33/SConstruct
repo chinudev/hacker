@@ -4,4 +4,6 @@ Program("palindrome.cpp", CCFLAGS=[ '/EHsc'])
 Program("pal_subseq.cpp", CCFLAGS=[ '/EHsc'])
 Program("disjoint_set.cpp", CCFLAGS=[ '/EHsc'])
 Program("pal_table.cpp", CCFLAGS=[ '/EHsc'])
+Program("graph.cpp", CCFLAGS=[ '/EHsc'])
+Program("bonnie_graph.cpp", CCFLAGS=[ '/EHsc'])
 
