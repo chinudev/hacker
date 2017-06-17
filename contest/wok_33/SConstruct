@@ -6,4 +6,5 @@ Program("disjoint_set.cpp", CCFLAGS=[ '/EHsc'])
 Program("pal_table.cpp", CCFLAGS=[ '/EHsc'])
 Program("graph.cpp", CCFLAGS=[ '/EHsc'])
 Program("bonnie_graph.cpp", CCFLAGS=[ '/EHsc'])
+Program("path_matching.cpp", CCFLAGS=[ '/EHsc'])
 
