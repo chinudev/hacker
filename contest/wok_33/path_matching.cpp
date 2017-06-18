@@ -10,6 +10,23 @@
 using namespace std;
 
 
+int match(char* str, int len, string& pattern) 
+{
+    int matchCount=0;
+    int maxIndex = len - pattern.size();
+    for (int i=0; i <= maxIndex; i++) {
+        bool match=true;
+        for (int k=0; k < pattern.size(); k++) {
+            if (str[i+k] != pattern[k]) {
+                match=false;
+                break;
+            }
+        }
+        if (match) matchCount++;
+    }
+    return matchCount;
+}
+
 class Node
 {
 public: 
@@ -117,7 +134,7 @@ public:
             superParentStack.pop_back();
             vector<int> emptyPath;
 
-            cout << "Processing super-parent " << id << endl;
+            //cout << "Processing super-parent " << id << endl;
             processSuperParent(id, id, emptyPath, 0);
         }
     }
@@ -147,7 +164,7 @@ public:
         vector<int> srcSuperPath = getSuperParentPath(src);
         vector<int> destSuperPath = getSuperParentPath(dest);
 
-        cout << src << " -> " << dest << " =  ";
+        //cout << src << " -> " << dest << " =  ";
 
         int commonSuperParent = -1;
         /*if (src == root || dest == root) {
@@ -248,7 +265,11 @@ public:
             nextId = id;
         }
         pathStr[charIndex]='\0';
-        cout << " ** match string = " << pathStr << endl;
+        //cout << " ** match string = " << pathStr << endl;
+
+        return match(pathStr, charIndex, patternStr);
+
+
 
         return -1;
     }
@@ -285,6 +306,7 @@ public:
 };
 
 
+/*
 void test()
 {
     string index = "abbaaabab";
@@ -309,10 +331,24 @@ void test()
 }
 
 
+void test2()
+{
+    assert(1 ==  match("abcd",4,string("a")));
+    assert(1 ==  match("abcd",4,string("abcd")));
+    assert(0 ==  match("abcd",4,string("abcde")));
+    assert(0 ==  match("abcd",4,string("x")));
+    assert(1 ==  match("x",1,string("x")));
+    assert(2 ==  match("xyx",3,string("x")));
+    assert(4 ==  match("abaaabaaa",9,string("aa")));
+}
+
+*/
+
 int main() 
 {
 
     //test();
+    //test2();
 
     int numNodes, numQuery;
     cin >> numNodes >> numQuery;
@@ -331,13 +367,13 @@ int main()
 
     graph.SegmentDepth = 4;   // set to low value to ease testing
     graph.ProcessTree();
-    graph.Print();
+    //graph.Print();
 
     for (int i=0; i < numQuery; i++) {
         int u, v;
         cin >> u >> v;
         int ans = graph.getMatch(u,v);
-        cout << "answer = " << ans << endl;
+        cout << ans << endl;
     }
 
 }
