@@ -10,6 +10,13 @@
 using namespace std;
 
 
+class Node
+{
+public: 
+    vector<int> adjList;
+};
+
+
 class AdjList_Graph
 {
 public:
@@ -24,8 +31,8 @@ public:
     int SegmentDepth;     // TODO tweak for performance
 
     // String variables
-    string& index;         // maps 
-    string& pattern;       // pattern we will be looking for
+    string& indexStr;         // maps 
+    string& patternStr;       // pattern we will be looking for
 
     // Same buffer is used for each query
     char pathStr[200*1000];    // allocate for worst case
@@ -39,8 +46,8 @@ public:
         superParent(numVertex,-1),
         pathToSuperParent(numVertex),
         SegmentDepth(100),
-        index(index_),
-        pattern(pattern_)
+        indexStr(index_),
+        patternStr(pattern_)
     {}
 
     void AddEdge(int u, int v)
@@ -64,26 +71,30 @@ public:
             int depth           // depth of this node
             ) 
     {
-        // Special handling for the first node viz. superParent
+
+        // Don't do this for super-parent
         //   could also have done (superParent[id] == -1) 
         if (id != superParentId) {
+            path.push_back(id);
             superParent[id] = superParentId;
-            pathToSuperParent[id] = path;     // should make a copy of the vector
+            pathToSuperParent[id] = path;     // make a copy of the vector
         }
 
         if (depth < SegmentDepth) {
             // Recurse through children
-            path.push_back(id);
             for (auto child: adjListVector[id]) {
                 // This check protects against a node visiting its parent
                 if (superParent[child] == -1)  {
                     processSuperParent(child, superParentId, path, depth+1);
                 }
             }
-            path.pop_back();
         } else {
             // Declare this node a super-parent
             superParentStack.push_back(id);
+        }
+
+        if (id != superParentId) {
+            path.pop_back();
         }
     }
 
@@ -104,12 +115,140 @@ public:
     vector<int> getSuperParentPath(int node) 
     {
         vector<int> path;
+
+        path.push_back(node);
+        while (node != root) {
+            node = superParent[node];
+            path.push_back(node);
+        }
         return path;
     }
 
     int getMatch(int src, int dest) 
     {
-        return 0;
+        if (src == dest) {
+            if ((patternStr.size() == 1) && (patternStr[0] == indexStr[src-1])) return 1;
+            return 0;
+        }
+
+        vector<int> srcPath = getSuperParentPath(src);
+        vector<int> destPath = getSuperParentPath(dest);
+
+        cout << src << " -> " << dest << endl;
+
+        cout << " src path " << src << ":";
+        for (auto elem: srcPath) cout << " " << elem;
+        cout << endl;
+        cout << " dest path " << dest << ":";
+        for (auto elem: destPath) cout << " " << elem;
+        cout << endl;
+
+        int commonSuperParent = -1;
+        if (src == root || dest == root) {
+            commonSuperParent = root;
+        } else {
+            while (srcPath.back() == destPath.back()) {
+                commonSuperParent = srcPath.back();
+                srcPath.pop_back();
+                destPath.pop_back();
+            }
+        }
+        assert(commonSuperParent != -1);
+        //assert(srcPath.size() > 0);
+        //assert(destPath.size() > 0);
+
+        cout << " ** common " << commonSuperParent << endl;
+        /*
+        cout << " *src path " << src << ":";
+        for (auto elem: srcPath) cout << " " << elem;
+        cout << endl;
+        cout << " *dest path " << dest << ":";
+        for (auto elem: destPath) cout << " " << elem;
+        cout << endl;
+        */
+
+        // handle src to common super parent 
+        int charIndex=0;
+        //int currNode = srcPath[0];
+        int currNode = src;
+        for (int i=1; i < srcPath.size(); i++) {
+            assert(superParent[currNode] == srcPath[i]);
+
+            // need to reverse this as path goes from super-parent to the node
+            auto& currPath = pathToSuperParent[currNode];
+            for (int k = currPath.size()-1; k >= 0; k--) {
+                pathStr[charIndex++] = indexStr[currPath[k]-1];
+            }
+            currNode = srcPath[i];
+        }
+        pathStr[charIndex]='\0';
+        cout << " path after src = " << pathStr << endl;
+
+        // handle common super-parent 
+        //int nextNode = destPath.back();
+        int nextNode = dest;
+        assert(superParent[currNode] == commonSuperParent);
+        assert(superParent[nextNode] == commonSuperParent);
+
+        int commonIndex=0;
+        auto currPath = pathToSuperParent[currNode];
+        auto nextPath = pathToSuperParent[nextNode];
+
+        while (1) {
+            if (currPath.size() == commonIndex) break;
+            if (nextPath.size() == commonIndex) break;
+            if (currPath[commonIndex] != nextPath[commonIndex]) break;
+            commonIndex++;
+        }
+        commonIndex--;  // commonIndex points to the common node. 
+                        // If -1, => super-parent is the common node
+ 
+        cout << " common index " << commonIndex << " for " << currNode << "," << nextNode << endl;
+
+        // copy in reverse order for src side
+        for (int i=currPath.size()-1; i > commonIndex; i--) {
+            pathStr[charIndex++] = indexStr[currPath[i]-1];
+        }
+
+        pathStr[charIndex]='\0';
+        cout << " path after common src = " << pathStr << endl;
+
+        if (commonIndex == -1)  {
+            pathStr[charIndex++] = indexStr[superParent[currNode]-1];
+        } else {
+            pathStr[charIndex++] = indexStr[currPath[commonIndex]-1];
+        }
+
+        pathStr[charIndex]='\0';
+        cout << " path after common middle = " << pathStr << endl;
+
+        for (int i=commonIndex+1; i < nextPath.size(); i++) {
+            pathStr[charIndex++] = indexStr[nextPath[i]-1];
+        }
+
+        pathStr[charIndex]='\0';
+        cout << " path after common dest = " << pathStr << endl;
+
+
+        // handle common super parent to dest
+        //  need to do in reverse order of super-parent path destPath
+        for (int i=destPath.size()-2; i >= 0; i--) {
+            assert(superParent[destPath[i]] == nextNode);
+
+            nextNode = destPath[i];
+            auto& nextPath = pathToSuperParent[nextNode];
+            for (int k = 0; k < nextPath.size(); k++) {
+                pathStr[charIndex++] = indexStr[nextPath[k]-1];
+            }
+        }
+        pathStr[charIndex] = '\0';
+
+        cout << "string = " << pathStr << endl;
+
+        // handle the common element
+
+
+        return -1;
     }
 
     void Print() 
@@ -117,7 +256,7 @@ public:
         cout << "Printing graph properties" << endl;
         for (int i=1; i < numVertex; i++) {
 
-            cout << i << " " << index[i-1] << " super " << superParent[i];
+            cout << i << " " << indexStr[i-1] << " super " << superParent[i];
 
             cout << "  path : (";
             for (auto node: pathToSuperParent[i]) {
@@ -186,8 +325,8 @@ int main()
     for (int i=0; i < numQuery; i++) {
         int u, v;
         cin >> u >> v;
-        cout << " path from " << u << " to " << v << " ";
-        cout << graph.getMatch(u,v) << endl;
+        int ans = graph.getMatch(u,v);
+        cout << "answer = " << ans << endl;
     }
 
 }
