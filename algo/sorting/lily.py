@@ -52,7 +52,7 @@ def try2(numList):
             # Instead of finding out what goes into index i, we will find 
             #   out where list1[i] needs to go. It must be somewhere in 
             #   range (0..i+1). 
-            index = bisect.bisect_left(refList[:i+1], list1[i])
+            index = bisect.bisect_left(refList, list1[i], 0, i+1)
             assert(refList[index] == list1[i])
 
             list1[i],list1[index] = list1[index],list1[i]
@@ -70,7 +70,7 @@ def try2(numList):
         idx = len(list2) - 1 - i 
 
         while list2[i] != refList[idx]:
-            index = bisect.bisect_left( refList[:idx+1], list2[i])
+            index = bisect.bisect_left( refList, list2[i], 0, idx+1)
             assert(refList[index] == list2[i])
             actualIndex = len(list2) - 1 - index
             #print(i, idx, index, actualIndex, list2, refList )
@@ -102,7 +102,7 @@ def test():
     assert(1 == try2([7,4,0,3]))
 
 
-#test()
+test()
 
 numEntries = int(input())
 numList = list(map(int, input().split()))
