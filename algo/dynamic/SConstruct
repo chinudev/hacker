@@ -4,4 +4,6 @@ Program("sherlock.cpp", CCFLAGS=[ '/EHsc'])
 Program("decibinary.cpp", CCFLAGS=[ '/EHsc'])
 Program("candies.cpp", CCFLAGS=[ '/EHsc'])
 Program("kingdom.cpp", CCFLAGS=[ '/EHsc'])
+Program("max_subarray.cpp", CCFLAGS=[ '/EHsc'])
+Program("abbr.cpp", CCFLAGS=[ '/EHsc'])
 
