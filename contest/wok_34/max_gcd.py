@@ -32,7 +32,7 @@ class PrimeStore:
     def findFactors(self,n):
         if n > self.maxN: raise Exception("range exceeded")
 
-        factorList = []
+        factorDict = dict()
         maxPrimeToTest = int(math.sqrt(n))
         prime = self.numList[1]
 
@@ -42,21 +42,31 @@ class PrimeStore:
                 while (n % prime == 0) : 
                     n = n / prime
                     count=count+1
-                factorList.append(prime)
+                factorDict[prime] = count
                 maxPrimeToTest = int(math.sqrt(n))
 
             # pick next prime
             prime = self.numList[prime]
 
         if (n != 1): 
-            factorList.append(int(n))
+            factorDict[n] = 1
 
-        return factorList
+        return factorDict
 
             
 
 
 PStore = PrimeStore(MaxN)
+
+
+def findGcd(dictA, dictB):
+    gcd = 1
+    for prime,countA in dictA.items():
+        if prime in dictB:
+            countB = dictB[prime]
+            count = min(countA,countB)
+            gcd = gcd * (prime**count)
+    return gcd
 
 
 def findMaxGcd(listA, listB):
@@ -70,62 +80,47 @@ def findMaxGcd(listA, listB):
 
     # Use listA to create list of possible GCD
     maxA = listA[0]
-    DivisorList = [0 for i in range(maxA+1)]
 
-    for num in listA:
-        if DivisorList[num] > 0: continue     # already handled
+    factorDictForA = []
 
-        for factor in reversed(PStore.findFactors(num)):
-            if DivisorList[factor] > 0:  continue
-
-            for value in range(factor,num+1,factor):
-                if (num % value == 0):
-                    DivisorList[value] = num 
+    for numA in listA:
+        factorDictForA.append((numA,PStore.findFactors(numA)))
 
 
     # Go through listB 
     maxGcd = 0
     maxGcdSum = 0
 
-    for num in listB:
-        if (num < maxGcd): break
+    for numB in listB:
+        if (numB <= maxGcd): break
+        dictB = PStore.findFactors(numB)
 
-        if num <= maxA and DivisorList[num] > 0:
-            # num must be greater than maxGcd and next number will be lower than this
-            maxGcd = num             
-            maxGcdSum = DivisorList[num] + num
-            break
+        for (numA,dictA) in factorDictForA:
+            if (numA < maxGcd): break
+            gcd = findGcd(dictA, dictB)
+            if (gcd > maxGcd):
+                maxGcd = gcd
+                maxGcdSum = numA + numB
+            elif (gcd == maxGcd):
+                maxGcdSum = max(maxGcdSum, numA + numB)
 
-        for factor in reversed(PStore.findFactors(num)):
-            if DivisorList[factor] == 0:  continue
-            if (factor > maxA): continue
-
-            for value in range(num,0,-factor):  # go backwards
-                if (value <= maxGcd): break
-                if (value > maxA): continue
-
-                if (num % value == 0):
-                    if DivisorList[value] > 0:  
-                        maxGcd = value
-                        maxGcdSum = DivisorList[value] + value
-                        break
 
     #print(maxGcd, maxGcdSum)
     return maxGcdSum
     
 
 def unitTest():
-    assert(PStore.findFactors(10) == [2,5])
-    assert(PStore.findFactors(7) == [7])
-    assert(PStore.findFactors(64) == [2])
-    assert(PStore.findFactors(98) == [2,7])
+    assert(PStore.findFactors(10) == {2:1, 5:1})
+    assert(PStore.findFactors(7) == {7:1})
+    assert(PStore.findFactors(64) == {2:6})
+    assert(PStore.findFactors(98) == {2:1,7:2})
 
     findMaxGcd([8,4,3,2,1],[12,8,5,3,2])
-    findMaxGcd([12,8,5,3,2],[8,4,3,2,1])
-    findMaxGcd([12,8,5,3,2],[12,8,5,3,2])
+    #findMaxGcd([12,8,5,3,2],[8,4,3,2,1])
+    #findMaxGcd([12,8,5,3,2],[12,8,5,3,2])
 
 
-#unitTest()
+unitTest()
 
 if __name__ == "__main__":
     n = int(input().strip())
