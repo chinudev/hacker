@@ -21,7 +21,7 @@ def createDict(arr):
     return arrDict
 
 
-#DictCache = dict()
+DictCache = dict()
 
 def findCount(arr, arrDict, x, y):
 
@@ -32,9 +32,9 @@ def findCount(arr, arrDict, x, y):
     if (y not in arrDict): y = 0
     if (y < x): x,y = y,x
 
-    #xyKey = str(x) + "." + str(y)
-    #if xyKey in DictCache:
-        #return DictCache[xyKey]
+    xyKey = str(x) + "." + str(y)
+    if xyKey in DictCache:
+        return DictCache[xyKey]
 
     runningCount = 0
 
@@ -80,7 +80,7 @@ def findCount(arr, arrDict, x, y):
             currIndex = minNext
 
 
-    #DictCache[xyKey] = runningCount
+    DictCache[xyKey] = runningCount
     return runningCount
 
 
