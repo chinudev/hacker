@@ -16,37 +16,34 @@ def createDict(arr):
     for key in arrDict:
         arrDict[key].append(marker)
     
+    arrDict[0] = [marker]   # entry for elements not in array
+
     return arrDict
 
 
-DictCache = dict()
+#DictCache = dict()
 
 def findCount(arr, arrDict, x, y):
 
+    if (x == y): 
+        x=0
+        y=0
     if (x not in arrDict): x = 0
     if (y not in arrDict): y = 0
     if (y < x): x,y = y,x
 
-    xyKey = str(x) + "." + str(y)
-    if xyKey in DictCache:
-        return DictCache[xyKey]
+    #xyKey = str(x) + "." + str(y)
+    #if xyKey in DictCache:
+        #return DictCache[xyKey]
 
     runningCount = 0
 
-    if (x == 0 ):
-        xList = [len(arr)]
-    else:
-        xList = arrDict[x]
-
-    if (y == 0):
-        yList = [len(arr)]
-    else:
-        yList = arrDict[y]
+    xList = arrDict[x]
+    yList = arrDict[y]
 
     maxExcursion = max(len(xList), len(yList)) 
     trailingCount = [0 for i in range(maxExcursion*2+1)]
     zeroOffset = maxExcursion
-
 
     xIndex = 0
     yIndex = 0
@@ -83,14 +80,19 @@ def findCount(arr, arrDict, x, y):
             currIndex = minNext
 
 
-    DictCache[xyKey] = runningCount
+    #DictCache[xyKey] = runningCount
     return runningCount
 
 
 def unitTest():
-    arr = [1,1,1, 4, 1,1, 4, 1,1, 5, 1,1, 5, 1,1,1]
+    #arr = [1,1,1, 4, 1,1, 4, 1,1, 5, 1,1, 5, 1,1,1]
+    #arr = [4,5,1,2,1,5,4]
+    #arr = [1,1, 4, 1,1, 5, 1,1, 4,5, 4,5, 1,1]
+    arr = [4,5,1,1]
     arrDict = createDict(arr)
     print(findCount(arr,arrDict, 4,5))
+    #print(findCount(arr,arrDict, 1,2))
+    return
     print(findCount(arr,arrDict, 4,5))
     print(findCount(arr,arrDict, 1,4))
     print(findCount(arr,arrDict, 1,5))
@@ -101,7 +103,7 @@ def unitTest():
 
 
 if __name__ == "__main__":
-    unitTest()
+    #unitTest()
 
     n, q = input().strip().split(' ')
     n, q = [int(n), int(q)]
