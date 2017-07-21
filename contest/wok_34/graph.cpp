@@ -83,39 +83,54 @@ public:
         }
     }
 
-    vector<uint32_t> VisitNode(int vertexId, uint32_t& sum)
+
+    // return sum
+    uint32_t VisitNode(
+            const int vertexId,            // Tree node to process
+            vector<uint32_t>& pathSums,    // insert paths for this child's descendant in vector
+            uint32_t& nextIndex)                //  starting at nextIndex. 
     {
-        vector<uint32_t> pathSums;
+        uint32_t sum=0;
         uint32_t vertexValue = valueVector[vertexId];
-        //cout << "Entering " << vertexId << ":" << sum << endl;
+        const uint32_t startIndex = nextIndex; // remember start index 
+
+        //cout << "Entering " << vertexId << ":" << nextIndex << endl;
+
 
         // handle path with this vertex as src and dest
         sum = (sum + fib.GetValue(vertexValue)) % MOD;
-        pathSums.push_back(vertexValue);
-
+        pathSums[nextIndex++] = vertexValue;
         visited[vertexId] = true;
+
 
         for (auto childVertex: adjListVector[vertexId]) {
             if (visited[childVertex]) continue;
 
             //cout << vertexId << "   Handling child " << childVertex << endl;
-            vector<uint32_t> childSum = VisitNode(childVertex,sum);
-            for (auto value1: childSum) {
+            uint32_t childIndex = nextIndex;
+            sum = (sum + VisitNode(childVertex, pathSums, childIndex)) % MOD;
 
+            for (int uIdx = nextIndex; uIdx < childIndex; uIdx++) {
                 // handle path from descendants of this child to :  
                 //   1. currentVertex
                 //   2. descendants of other childs processed so far
-                for (auto value2: pathSums) {
-                    sum = (sum + 2*fib.GetValue(value1+value2)) % MOD;
+                for (int vIdx = startIndex; vIdx < nextIndex; vIdx++) {
+                    sum = (sum + 2*fib.GetValue(pathSums[uIdx]+pathSums[vIdx])) % MOD;
                     //cout << vertexId << "       added path child-child " << sum << endl;
                 }
+
             }
-            // add to the cummulative list of paths from all descendants
-            for (auto value1: childSum) pathSums.push_back(value1+vertexValue);
+
+            for (int uIdx = nextIndex; uIdx < childIndex; uIdx++) {
+                pathSums[uIdx] += vertexValue;
+            }
+            nextIndex = childIndex;
         }
 
-        //cout << "Returning from " << vertexId << ":" << sum << endl;
-        return pathSums;
+        //cout << "Returning from " << vertexId << ":" << sum << ":" << nextIndex << " @";
+        //for (int i=0; i < nextIndex;  i++) cout << pathSums[i] << ",";
+        //cout << endl;
+        return sum;
     }
 
     void resetVisited() {
@@ -125,9 +140,9 @@ public:
     uint32_t GetSum() 
     {
         resetVisited();
-        uint32_t sum=0;
-        VisitNode(1,sum);
-        return sum;
+        vector<uint32_t> pathSums(numVertex+1); 
+        uint32_t nextIndex=0;
+        return VisitNode(1, pathSums, nextIndex);
     }
 
 };
@@ -160,7 +175,7 @@ void test1()
 
 void test2()
 {
-    Fibo fib(100);
+    Fibo fib(1000);
     AdjList_Graph tree(12, fib);
 
     tree.AddEdge(1,2);
@@ -188,16 +203,17 @@ void test2()
     tree.AddValue(2);
 
     //tree.Print();
-    cout << tree.GetSum() << endl;
+    //cout << tree.GetSum() << endl;
 
     uint32_t sum;
     //sum=0; tree.VisitNode(5,sum); cout << "5 = " << sum << endl;
 
     tree.resetVisited(); 
     sum=0; tree.visited[1] = true;
-    vector<uint32_t> pathSum = tree.VisitNode(3,sum); 
-    cout << "3 = " << sum << " : ";
-    for (auto elem: pathSum) cout << elem << ",";
+    vector<uint32_t> pathSum(10);
+    uint32_t nextIndex=0;
+    cout << "3 = " << tree.VisitNode(3,pathSum,nextIndex) << endl; 
+    for (int i=0; i < nextIndex; i++) cout << pathSum[nextIndex] << ",";
     cout << endl;
 
 }
@@ -216,7 +232,7 @@ int main()
     int numNodes; 
     cin >> numNodes;
 
-    Fibo fib(5*1000*1000);
+    Fibo fib(25*1000*1000);
     AdjList_Graph tree(numNodes+1, fib);
     
     for (int i=1; i < numNodes; i++) {
