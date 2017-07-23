@@ -1,3 +1,4 @@
 
 Program("graph.cpp", CCFLAGS=[ '/EHsc'])
+Program("path_stats.cpp", CCFLAGS=[ '/EHsc'])
 
