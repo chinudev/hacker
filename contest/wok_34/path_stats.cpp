@@ -16,15 +16,18 @@ public:
     int numVertex;
 
     vector<vector<int>> adjListVector;
-    vector<vector<int>> pathVector;     // path for each vertex
+    vector<int> parentVector;          // store parent for each node
     vector<uint32_t> valueVector;       // value for each vertex
+
+    vector<int> tempValueVector;       // used for iterations
     const int RootId = 1;
 
 public:
     AdjList_Graph(int numVertex_) :
         numVertex(numVertex_+1) , 
         adjListVector(numVertex+1),
-        pathVector(numVertex+1)
+        parentVector(numVertex+1),
+        tempValueVector(numVertex+1)
     {
         valueVector.push_back(0); //dummy value for node 0
     }
@@ -41,17 +44,16 @@ public:
     }
 
 
-    void _compute(int nodeId, int parentId, vector<int> path) 
+    void _compute(int nodeId, int parentId) 
     {
-        path.push_back(nodeId);
-        pathVector[nodeId] = path;
+        parentVector[nodeId] = parentId;
 
         vector<int>& nodeVector = adjListVector[nodeId];
 
         // Recursively call children
         for (int i=0;i < nodeVector.size(); i++) {
             if (nodeVector[i] != parentId) {
-                _compute(nodeVector[i], nodeId, path);
+                _compute(nodeVector[i], nodeId);
             }
         }
     }
@@ -59,24 +61,56 @@ public:
     // call this after adding all the edges
     void ComputePath() 
     {
-        vector<int> dummy;
-        _compute(RootId, -1, dummy);
+        _compute(RootId, -1);
     }
 
     int FindK_OnPath(int u, int v,int k)
     {
-        return -1;
+        if (u == v) return valueVector[u];
+
+        unordered_map<int,int> freq;   // key = Ci , value = freq
+        int currNode = u; 
+        while (currNode != -1) {
+            freq[valueVector[currNode]]++;
+            //cout << "  u : incr " << currNode << ":" <<  freq[valueVector[currNode]] << endl;
+            tempValueVector[currNode]=u;
+            currNode = parentVector[currNode];
+        }
+
+        currNode = v;
+        while (currNode != -1) {
+            if (tempValueVector[currNode] == u) {
+                currNode = parentVector[currNode];
+                break;
+            }
+            freq[valueVector[currNode]]++;
+            //cout << "  v : incr " << currNode << ":" <<  freq[valueVector[currNode]] << endl;
+            currNode = parentVector[currNode];
+        }
+
+        while (currNode != -1) {
+            freq[valueVector[currNode]]--;
+            //cout << "  v : decr " << currNode << ":" <<  freq[valueVector[currNode]] << endl;
+            currNode = parentVector[currNode];
+        }
+        
+        // store in a vector of pair to sort
+        vector<pair<int,int>> orderVector;
+        for (auto it=freq.begin(); it != freq.end(); ++it) {
+            //cout << "  insert " << it->first << ":" <<  it->second << endl;
+            orderVector.emplace_back(it->second, it->first); // put freq as first
+        }
+        sort(orderVector.rbegin(), orderVector.rend());
+        return orderVector[k-1].second;
     }
 
     void Print() 
     {
         for (int i=0; i < numVertex; i++) {
-            cout << i << " : " << valueVector[i] << " adj=[";
+            cout << i << " : " << valueVector[i] 
+                 << " parent(" << parentVector[i] 
+                 << ") adj=[";
             for (auto elem: adjListVector[i]) {
-                cout << elem << ",";
-            }
-            cout << "] path=[";
-            for (auto elem: pathVector[i]) {
                 cout << elem << ",";
             }
             cout << "]" << endl;
@@ -107,6 +141,10 @@ void test1()
     tree.ComputePath(); 
 
     tree.Print();
+    cout << tree.FindK_OnPath(1,2,1) << endl;
+    cout << tree.FindK_OnPath(1,2,2) << endl;
+    cout << tree.FindK_OnPath(1,3,1) << endl;
+    cout << tree.FindK_OnPath(1,3,3) << endl;
 
 }
 
@@ -139,7 +177,7 @@ int main()
     tree.ComputePath(); 
     //tree.Print();
 
-    for (int i=1; i < numNodes; i++) {
+    for (int i=0; i < numQueries; i++) {
         int u,v,k;
         cin >> u >> v >> k;
         cout << tree.FindK_OnPath(u,v,k) << endl;
