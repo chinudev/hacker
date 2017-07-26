@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <vector>
+#include <set>
+#include <algorithm>
 #include <stdint.h>
 
 using namespace std; 
@@ -43,34 +45,54 @@ uint64_t findMax2(const vector<uint64_t>& numList, uint64_t mod)
     return maxSum;
 }
 
-// O(n) version 
-// This relies on the fact that mod <= 10**14 and n <= 10**5 so total 
-//  for whole array will be less than 10**19 that just fits in 
-//  uint64
 // 
 uint64_t findMax(const vector<uint64_t>& numList, uint64_t mod)
 {
-    uint64_t maxSum=0;
 
-    for (int start=0; start<numList.size(); start++) {
-        uint64_t subSum=0;
-        for (int end=start; end<numList.size(); end++) {
-            subSum = (subSum + numList[end]) % mod;
-            if (subSum > maxSum) {
-                maxSum = subSum;
-            }
-        }
+    // This stores partial sums in sorted order. 
+    //  Pair contains first=sum, second=index
+    vector<uint64_t> partialSumVec(numList.size());
+
+    uint64_t maxSum=0;
+    uint64_t currSum=0;
+    for (int i=0; i < numList.size(); i++)  {
+        auto elem = numList[i];
+        currSum = (currSum + elem) % mod;
+        partialSumVec[i] = currSum;
+        maxSum = max(maxSum, currSum);
+        maxSum = max(maxSum, elem);
     }
+
+    //cout << "partial sum vector = ";
+    //for (auto elem: partialSumVec) cout << elem << ",";
+    //cout << endl;
+
+    // This set contains partialSum for all elements processed till now. 
+    //  Starts off as empty 
+    set<uint64_t> partialSumSet;
+    for (auto partialSum: partialSumVec) {
+        //maxSum = max(maxSum, partialSum);
+
+        // look for the smallest "partial sum" greater than this element in set
+        auto it = partialSumSet.upper_bound(partialSum);
+        if (it != partialSumSet.end()) {
+            uint64_t temp = (partialSum - *it + mod) % mod;
+            maxSum = max(maxSum, temp);
+            //cout << partialSum << "**=>" << maxSum << endl;
+        }
+        partialSumSet.insert(partialSum);
+        //cout << partialSum << "=>" << maxSum << endl;
+    }
+
     return maxSum;
 }
 
 
 int main()
 {
-    cout << findMax1({3,3,9,9,5}, 7) << endl;
-    cout << findMax2({3,3,9,9,5}, 7) << endl;
+    //cout << findMax2({3,3,9,9,5}, 7) << endl;
+    //cout << findMax({3,3,9,9,5}, 7) << endl;
     
-    exit(1);
     int numQuery;
 
     cin >> numQuery; 
@@ -87,6 +109,6 @@ int main()
             elemList.push_back( elem % mod);
         }
 
-        //cout << findMaxSubSum(elemList, mod) << endl;
+        cout << findMax(elemList, mod) << endl;
     }
 }
