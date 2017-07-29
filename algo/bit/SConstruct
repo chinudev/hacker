@@ -1,4 +1,9 @@
+import sys
 
-Program("xor_seq.cpp", CCFLAGS=[ '/EHsc'])
-Program("counter_game.cpp", CCFLAGS=[ '/EHsc'])
+if sys.platform == 'win32':
+    env = Environment()
+    env.append(CCFLAGS=['EHsc'])
+
+Program("xor_seq.cpp")
+Program("counter_game.cpp")
 
