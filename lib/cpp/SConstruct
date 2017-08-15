@@ -1,0 +1,3 @@
+
+Program("bsearch.cpp", CCFLAGS=[ '/EHsc'])
+
