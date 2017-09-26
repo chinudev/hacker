@@ -6,6 +6,7 @@
 #include <iostream>
 #include <algorithm>
 #include <stdint.h>
+#include <assert.h>
 using namespace std;
 
 
@@ -29,6 +30,20 @@ uint32_t minUnsetBit(uint32_t value)
         }
     }
     return 32;
+}
+
+void unitTest()
+{
+    assert(minUnsetBit(0) == 0);
+    assert(minUnsetBit(1) == 1);
+    assert(minUnsetBit(2) == 0);
+    assert(minUnsetBit(0xff) == 8);
+
+    //assert(maxSetBit(0) == 0);
+    assert(maxSetBit(1) == 0);
+    assert(maxSetBit(2) == 1);
+    assert(maxSetBit(0xff) == 7);
+    assert(maxSetBit(0xa0) == 7);
 }
 
 int findMax(int n, int k) 
@@ -66,7 +81,7 @@ int findMax(int n, int k)
         uint32_t newTarget = target | 1;
         uint32_t k_LSB_0 = minUnsetBit(newTarget);
         uint32_t b = newTarget | (1 << k_LSB_0); 
-        if ((newTarget < k) && (b < n)) {
+        if ((newTarget < k) && (b <= n)) {
             return newTarget;
         }
     }
@@ -77,6 +92,8 @@ int findMax(int n, int k)
 
 int main() 
 {
+    unitTest();
+
     int numTest;
     cin >> numTest;
     for (;numTest > 0; numTest--) {
