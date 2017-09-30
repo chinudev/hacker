@@ -1,0 +1,4 @@
+
+Program("volcano.cpp", CCFLAGS=[ '/EHsc'])
+Program("snake.cpp", CCFLAGS=[ '/EHsc'])
+
