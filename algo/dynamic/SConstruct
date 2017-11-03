@@ -7,4 +7,5 @@ Program("kingdom.cpp", CCFLAGS=[ '/EHsc'])
 Program("max_subarray.cpp", CCFLAGS=[ '/EHsc'])
 Program("abbr.cpp", CCFLAGS=[ '/EHsc'])
 Program("stock_max.cpp", CCFLAGS=[ '/EHsc'])
+Program("candles.cpp", CCFLAGS=[ '/EHsc'])
 

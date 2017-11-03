@@ -1,0 +1,3 @@
+
+Program("tries_contact.cpp", CCFLAGS=[ '/EHsc'])
+

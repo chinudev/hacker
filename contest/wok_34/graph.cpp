@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 #include <algorithm>
 #include <assert.h>
 #include <stdint.h>
@@ -13,32 +14,41 @@ const uint32_t MOD = 1000*1000*1000 + 7;
 class Fibo 
 {
 public:
-    vector<uint32_t> Fib;
-    int Max;
+    unordered_map<int, int> store;
 
 public:
-    Fibo(int max) : Fib(max), Max(max)
+    Fibo(int max) 
     {
-        init();
+        store[0] = 0;
+        store[1] = 1;
+        store[2] = 1;
     }
 
-    void init() 
-    {
-        int i0=1; Fib[0]=i0;
-        int i1=1; Fib[1]=i1;
-
-        for (int i=2; i <= Max; i++) {
-            uint32_t newValue = (i0+i1) % MOD;
-            Fib[i] = newValue;
-            i0=i1;
-            i1=newValue;
-        }
-    }
     
-    uint32_t GetValue(int index) 
+    uint32_t GetValue_(int index) 
     {
-        assert(index <= Max);
-        return Fib[index];
+        if (store.find(index) == store.end()) {
+            if (index & 1)  {  // odd 
+                int k = (index+1)/2;
+                uint64_t fibK = GetValue_(k);
+                uint64_t fibK_1 = GetValue_(k-1);
+                store[index] = (fibK*fibK + fibK_1*fibK_1) % MOD;
+            } else {
+                int k = index/2;
+                uint64_t fibK = GetValue_(k);
+                uint64_t fibK_1 = GetValue_(k-1);
+                store[index] = (2*fibK_1*fibK + fibK*fibK) % MOD;
+            }
+        }
+        return store[index];
+    }
+
+    // dummy value still gives timeout for number of test cases => tree traversal needs
+    //  to be optimized. 
+    // Lazy computation of fibonacci caused more timeouts then pre-computations.. 
+    //  we may need to do combination of pre-computation and use a map for larger index
+    uint32_t GetValue(int index) {
+        return GetValue_(index+1);
     }
 };
 

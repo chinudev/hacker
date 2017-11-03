@@ -365,7 +365,7 @@ int main()
         graph.AddEdge(u,v);
     }
 
-    graph.SegmentDepth = 4;   // set to low value to ease testing
+    graph.SegmentDepth = 100;   // set to low value to ease testing
     graph.ProcessTree();
     //graph.Print();
 
